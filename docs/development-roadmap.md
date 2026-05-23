@@ -93,6 +93,5 @@ Target:
 - Overlay map.
 - Dukungan mobile/desktop app jika benar-benar diperlukan.
 - Sistem subscription/payment.
-- Integrasi domain `strategic.paskus791.cloud`.
+- Integrasi domain `strategic.so791.com`.
 - Backend real-time yang tidak bergantung pada repo publik.
-

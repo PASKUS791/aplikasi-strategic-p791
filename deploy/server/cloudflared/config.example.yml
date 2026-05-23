@@ -2,6 +2,6 @@ tunnel: strategic-p791-coming-soon
 credentials-file: /etc/cloudflared/strategic-p791-coming-soon.json
 
 ingress:
-  - hostname: strategic.paskus791.cloud
+  - hostname: strategic.so791.com
     service: http://127.0.0.1:17912
   - service: http_status:404

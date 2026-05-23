@@ -54,7 +54,7 @@ Arsitektur domain disiapkan seperti ini:
 
 ```text
 GitHub Pages                -> preview/pembesaran frontend aplikasi
-strategic.paskus791.cloud   -> halaman coming soon dari server via Cloudflare Tunnel
+strategic.so791.com         -> halaman coming soon dari server via Cloudflare Tunnel
 ```
 
 Selama aplikasi masih dibuat, domain utama menampilkan halaman coming soon dari server. Setelah MVP siap, frontend bisa tetap dibesarkan di GitHub Pages atau dipindahkan ke server yang sama sesuai kebutuhan keamanan aplikasi berbayar.

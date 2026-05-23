@@ -3,7 +3,7 @@
 Folder ini menyiapkan deployment untuk domain utama:
 
 ```text
-strategic.paskus791.cloud
+strategic.so791.com
 ```
 
 Tujuan:
@@ -77,7 +77,7 @@ sudo systemctl enable --now strategic-p791-sync.timer
 
 ```bash
 cloudflared tunnel create strategic-p791-coming-soon
-cloudflared tunnel route dns strategic-p791-coming-soon strategic.paskus791.cloud
+cloudflared tunnel route dns strategic-p791-coming-soon strategic.so791.com
 ```
 
 8. Sesuaikan config tunnel dari `cloudflared/config.example.yml`, lalu jalankan:

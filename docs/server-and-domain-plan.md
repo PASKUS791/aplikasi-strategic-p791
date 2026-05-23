@@ -3,7 +3,7 @@
 ## Kondisi Saat Ini
 
 - GitHub Pages disiapkan sebagai preview/pembesaran frontend aplikasi.
-- Domain utama `strategic.paskus791.cloud` akan menjalankan halaman coming soon dari server.
+- Domain utama `strategic.so791.com` akan menjalankan halaman coming soon dari server.
 - Akses publik domain utama lewat Cloudflare Tunnel, bukan langsung expose port server.
 - Akses SSH server sudah diketahui oleh pemilik, tetapi password tidak dimasukkan ke repo atau command deployment.
 
@@ -26,7 +26,7 @@ Repo GitHub: aplikasi-strategic-p791
             Cloudflare Tunnel
                  |
                  v
-            strategic.paskus791.cloud
+            strategic.so791.com
 ```
 
 Dengan pola ini, domain utama tetap dikendalikan dari server dan Cloudflare, sedangkan GitHub tetap menjadi pusat kerja tim.
@@ -45,17 +45,17 @@ Langkah yang disarankan:
 
 ## Cloudflare Tunnel Untuk Domain Resmi
 
-Untuk coming soon di domain utama, jangan arahkan `strategic.paskus791.cloud` ke GitHub Pages. Buat Cloudflare Tunnel yang route-nya mengarah ke service lokal server:
+Untuk coming soon di domain utama, jangan arahkan `strategic.so791.com` ke GitHub Pages. Buat Cloudflare Tunnel yang route-nya mengarah ke service lokal server:
 
 ```text
-https://strategic.paskus791.cloud -> http://127.0.0.1:17912
+https://strategic.so791.com -> http://127.0.0.1:17912
 ```
 
 Langkah umum:
 
 1. Install `cloudflared` di server.
 2. Buat tunnel bernama `strategic-p791-coming-soon`.
-3. Route DNS `strategic.paskus791.cloud` ke tunnel.
+3. Route DNS `strategic.so791.com` ke tunnel.
 4. Jalankan service static lokal yang melayani folder static `site/`.
 5. Jalankan timer sync agar server menarik update terbaru dari GitHub.
 
