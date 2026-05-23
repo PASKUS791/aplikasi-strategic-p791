@@ -20,9 +20,10 @@ Halaman publik saat ini hanya menampilkan status:
 ## Struktur Repo
 
 ```text
-site/                         Halaman publik GitHub Pages
+site/                         Halaman coming soon dan GitHub Pages preview
 site/data/app-status.json     Data status publik yang bisa diperbarui tim
 docs/                         Ringkasan meeting dan rencana pengembangan
+deploy/server/                Paket deployment server + Cloudflare Tunnel
 .github/workflows/pages.yml   Deploy otomatis ke GitHub Pages
 ```
 
@@ -49,11 +50,11 @@ Catatan penting: data strategi, marker map, scouting, user berbayar, lisensi dev
 
 ## Domain
 
-Target domain resmi nanti:
+Arsitektur domain disiapkan seperti ini:
 
 ```text
-strategic.paskus791.cloud
+GitHub Pages                -> preview/pembesaran frontend aplikasi
+strategic.paskus791.cloud   -> halaman coming soon dari server via Cloudflare Tunnel
 ```
 
-Untuk sementara, deploy publik disiapkan melalui GitHub Pages.
-
+Selama aplikasi masih dibuat, domain utama menampilkan halaman coming soon dari server. Setelah MVP siap, frontend bisa tetap dibesarkan di GitHub Pages atau dipindahkan ke server yang sama sesuai kebutuhan keamanan aplikasi berbayar.

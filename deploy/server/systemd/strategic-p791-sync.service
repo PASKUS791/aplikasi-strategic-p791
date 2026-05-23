@@ -1,0 +1,9 @@
+[Unit]
+Description=Sync Strategic P791 coming soon site from GitHub
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/strategic-p791/repo/deploy/server/scripts/sync-coming-soon.sh
+

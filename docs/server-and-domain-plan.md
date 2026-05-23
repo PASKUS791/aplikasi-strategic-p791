@@ -2,9 +2,34 @@
 
 ## Kondisi Saat Ini
 
-- Halaman publik disiapkan untuk GitHub Pages.
-- Target domain resmi nanti adalah `strategic.paskus791.cloud`.
+- GitHub Pages disiapkan sebagai preview/pembesaran frontend aplikasi.
+- Domain utama `strategic.paskus791.cloud` akan menjalankan halaman coming soon dari server.
+- Akses publik domain utama lewat Cloudflare Tunnel, bukan langsung expose port server.
 - Akses SSH server sudah diketahui oleh pemilik, tetapi password tidak dimasukkan ke repo atau command deployment.
+
+## Arsitektur Yang Dipakai
+
+```text
+Tim update GitHub
+        |
+        v
+Repo GitHub: aplikasi-strategic-p791
+        |
+        +--> GitHub Pages untuk preview/pengembangan frontend
+        |
+        +--> Server pull/sync folder site/
+                 |
+                 v
+            Nginx lokal 127.0.0.1:8787
+                 |
+                 v
+            Cloudflare Tunnel
+                 |
+                 v
+            strategic.paskus791.cloud
+```
+
+Dengan pola ini, domain utama tetap dikendalikan dari server dan Cloudflare, sedangkan GitHub tetap menjadi pusat kerja tim.
 
 ## Rekomendasi Keamanan SSH
 
@@ -18,27 +43,40 @@ Langkah yang disarankan:
 4. Deploy otomatis dari branch `main`.
 5. Batasi permission folder web hanya untuk kebutuhan deploy.
 
-## DNS Untuk Domain Resmi
+## Cloudflare Tunnel Untuk Domain Resmi
 
-Jika memakai GitHub Pages:
-
-1. Buat record CNAME:
+Untuk coming soon di domain utama, jangan arahkan `strategic.paskus791.cloud` ke GitHub Pages. Buat Cloudflare Tunnel yang route-nya mengarah ke service lokal server:
 
 ```text
-strategic.paskus791.cloud -> <username>.github.io
+https://strategic.paskus791.cloud -> http://127.0.0.1:8787
 ```
 
-2. Tambahkan custom domain di Settings > Pages.
-3. Aktifkan HTTPS.
+Langkah umum:
 
-Jika memakai server sendiri:
+1. Install `cloudflared` di server.
+2. Buat tunnel bernama `strategic-p791-coming-soon`.
+3. Route DNS `strategic.paskus791.cloud` ke tunnel.
+4. Jalankan Nginx lokal yang melayani folder static `site/`.
+5. Jalankan timer sync agar server menarik update terbaru dari GitHub.
 
-1. Arahkan DNS `A` atau `CNAME` ke server/proxy.
-2. Pasang Nginx/Caddy.
-3. Aktifkan TLS.
-4. Jalankan aplikasi dari service manager seperti systemd atau Docker.
+File template tersedia di:
+
+```text
+deploy/server/
+```
+
+## GitHub Pages
+
+GitHub Pages tetap dipakai untuk:
+
+- preview publik awal,
+- review perubahan UI,
+- pembesaran frontend static,
+- dokumentasi deployment.
+
+Jangan pasang custom domain utama ke GitHub Pages selama domain utama ingin tetap running dari server via Cloudflare Tunnel.
 
 ## Catatan
 
-Untuk fase coming soon, GitHub Pages sudah cukup. Untuk aplikasi berbayar dengan login, lisensi device, dan data internal, pindahkan ke backend privat.
+Untuk aplikasi berbayar dengan login, lisensi device, dan data internal, GitHub Pages hanya boleh memegang frontend/static shell. Backend, database, audit login, dan data internal harus berada di server/API privat.
 
