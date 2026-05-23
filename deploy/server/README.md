@@ -47,7 +47,7 @@ sudo apt install -y git rsync nginx
 ```bash
 sudo mkdir -p /opt/strategic-p791
 sudo chown -R "$USER":"$USER" /opt/strategic-p791
-git clone https://github.com/YerikhoArfensiasEffendi/aplikasi-strategic-p791.git /opt/strategic-p791/repo
+git clone https://github.com/PASKUS791/aplikasi-strategic-p791.git /opt/strategic-p791/repo
 ```
 
 4. Pasang service static coming soon:
