@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200" role="img" aria-label="Abstract tactical map grid">
+  <rect width="1800" height="1200" fill="#111514"/>
+  <path d="M0 980 C220 900 310 1060 520 980 C730 900 880 950 1050 1020 C1260 1110 1450 960 1800 1040 L1800 1200 L0 1200 Z" fill="#263021"/>
+  <path d="M0 260 C150 210 270 310 410 250 C620 160 760 300 900 230 C1100 130 1230 200 1360 280 C1510 370 1660 300 1800 240 L1800 0 L0 0 Z" fill="#1b3130"/>
+  <g opacity="0.28" stroke="#f7f3ea" stroke-width="1">
+    <path d="M0 100 H1800 M0 200 H1800 M0 300 H1800 M0 400 H1800 M0 500 H1800 M0 600 H1800 M0 700 H1800 M0 800 H1800 M0 900 H1800 M0 1000 H1800 M0 1100 H1800"/>
+    <path d="M100 0 V1200 M200 0 V1200 M300 0 V1200 M400 0 V1200 M500 0 V1200 M600 0 V1200 M700 0 V1200 M800 0 V1200 M900 0 V1200 M1000 0 V1200 M1100 0 V1200 M1200 0 V1200 M1300 0 V1200 M1400 0 V1200 M1500 0 V1200 M1600 0 V1200 M1700 0 V1200"/>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M150 820 L310 740 L470 780 L640 680 L820 720 L980 620 L1180 660 L1380 540 L1600 580" stroke="#e2b84b" stroke-width="6" opacity="0.7"/>
+    <path d="M260 390 L420 450 L620 410 L760 500 L930 470 L1120 520 L1280 450 L1490 490" stroke="#58d68d" stroke-width="5" opacity="0.55"/>
+    <path d="M300 210 L520 310 L780 270 L1040 360 L1330 320 L1600 410" stroke="#d85f48" stroke-width="4" opacity="0.46" stroke-dasharray="18 18"/>
+  </g>
+  <g>
+    <circle cx="310" cy="740" r="12" fill="#e2b84b"/>
+    <circle cx="640" cy="680" r="12" fill="#e2b84b"/>
+    <circle cx="980" cy="620" r="12" fill="#e2b84b"/>
+    <circle cx="1380" cy="540" r="12" fill="#e2b84b"/>
+    <rect x="407" y="437" width="26" height="26" fill="#58d68d" transform="rotate(45 420 450)"/>
+    <rect x="917" y="457" width="26" height="26" fill="#58d68d" transform="rotate(45 930 470)"/>
+    <rect x="1477" y="477" width="26" height="26" fill="#58d68d" transform="rotate(45 1490 490)"/>
+    <path d="M520 300 L535 330 L505 330 Z" fill="#d85f48"/>
+    <path d="M1040 350 L1055 380 L1025 380 Z" fill="#d85f48"/>
+    <path d="M1600 400 L1615 430 L1585 430 Z" fill="#d85f48"/>
+  </g>
+  <g fill="#f7f3ea" opacity="0.22" font-family="ui-sans-serif, system-ui, sans-serif" font-size="32" font-weight="700">
+    <text x="124" y="150">A1</text>
+    <text x="624" y="150">F1</text>
+    <text x="1124" y="150">K1</text>
+    <text x="1624" y="150">P1</text>
+    <text x="124" y="650">A6</text>
+    <text x="624" y="650">F6</text>
+    <text x="1124" y="650">K6</text>
+    <text x="1624" y="650">P6</text>
+    <text x="124" y="1150">A11</text>
+    <text x="624" y="1150">F11</text>
+    <text x="1124" y="1150">K11</text>
+    <text x="1624" y="1150">P11</text>
+  </g>
+</svg>
+
