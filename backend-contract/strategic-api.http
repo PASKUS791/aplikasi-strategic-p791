@@ -1,0 +1,102 @@
+@baseUrl = https://api.strategic.so791.com
+@json = application/json
+
+###
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{json}}
+
+{
+  "scope": "strategic",
+  "username": "strategicadmin",
+  "password": "ChangeMeStrategic123!"
+}
+
+###
+GET {{baseUrl}}/api/auth/session
+
+###
+POST {{baseUrl}}/api/auth/logout
+Content-Type: {{json}}
+
+{}
+
+###
+GET {{baseUrl}}/api/resources/strategic.plannerState
+
+###
+PUT {{baseUrl}}/api/resources/strategic.plannerState
+Content-Type: {{json}}
+
+{
+  "value": {
+    "actions": [],
+    "enabledCategoryIds": ["2", "3", "4", "5", "6", "7", "8", "enemy-intel"],
+    "viewport": null
+  }
+}
+
+###
+GET {{baseUrl}}/api/resources/strategic.customMaps
+
+###
+PUT {{baseUrl}}/api/resources/strategic.customMaps
+Content-Type: {{json}}
+
+{
+  "value": []
+}
+
+###
+GET {{baseUrl}}/api/resources/strategic.strategicSaves
+
+###
+PUT {{baseUrl}}/api/resources/strategic.strategicSaves
+Content-Type: {{json}}
+
+{
+  "value": []
+}
+
+###
+GET {{baseUrl}}/api/resources/strategic.mapPlannerUsers
+
+###
+PUT {{baseUrl}}/api/resources/strategic.mapPlannerUsers
+Content-Type: {{json}}
+
+{
+  "value": [
+    {
+      "username": "ronoalpha",
+      "access": {
+        "mainPlanner": true,
+        "customMaps": true,
+        "saves": true
+      },
+      "updatedAt": "2026-04-06T00:00:00.000Z"
+    }
+  ]
+}
+
+###
+GET {{baseUrl}}/api/strategic/users
+
+###
+POST {{baseUrl}}/api/strategic/users
+Content-Type: {{json}}
+
+{
+  "username": "ronoalpha",
+  "label": "Rono Alpha",
+  "unit": "Strategic Tactical Cell",
+  "password": "ChangeMeStrategic123!"
+}
+
+###
+DELETE {{baseUrl}}/api/strategic/users/ronoalpha
+
+###
+POST {{baseUrl}}/api/strategic/strategic-saves/main-strategy-001/dispatch
+Content-Type: {{json}}
+
+{}

@@ -1,0 +1,15 @@
+# Team DUKUN PASKUS 791
+# Jevier - Frontend
+# Teddy - Backend
+# Lee - Cyber Sector
+# Osiris - Bot Manufactur
+# Internal proprietary source notice.
+
+[build]
+  command = "npm run build"
+  publish = "dist-strategic"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "project": "Strategic P791",
+    "apiBaseUrl": "https://api.strategic.so791.com",
+    "scope": "strategic",
+    "notes": [
+      "Password di file seed ini masih plain text supaya tim backend gampang mapping saat bootstrap awal.",
+      "Saat masuk backend production, password wajib di-hash di server dan jangan disimpan mentah di database.",
+      "Username semua dibuat lowercase karena frontend Strategic menormalisasi username ke lowercase."
+    ]
+  },
+  "users": [
+    {
+      "username": "strategicadmin",
+      "label": "Strategic Admin",
+      "nama": "Strategic Admin",
+      "unit": "Strategic Command",
+      "scope": "strategic",
+      "password": "ChangeMeStrategic123!",
+      "access": {
+        "mainPlanner": true,
+        "customMaps": true,
+        "saves": true
+      },
+      "isPrimaryAdmin": true
+    },
+    {
+      "username": "adminstrategic",
+      "label": "Admin Strategic",
+      "nama": "Admin Strategic",
+      "unit": "Strategic Command",
+      "scope": "strategic",
+      "password": "ChangeMeAdminStrategic123!",
+      "access": {
+        "mainPlanner": true,
+        "customMaps": true,
+        "saves": true
+      },
+      "isPrimaryAdmin": true
+    }
+  ],
+  "resources": {
+    "strategic.plannerState": {
+      "actions": [],
+      "enabledCategoryIds": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "enemy-intel"
+      ],
+      "viewport": null
+    },
+    "strategic.customMaps": [],
+    "strategic.strategicSaves": [],
+    "strategic.mapPlannerUsers": [
+      {
+        "username": "adminstrategic",
+        "access": {
+          "mainPlanner": true,
+          "customMaps": true,
+          "saves": true
+        },
+        "updatedAt": "2026-04-06T00:00:00.000Z"
+      }
+    ]
+  },
+  "examples": {
+    "customMap": {
+      "id": "custom-map-sample-001",
+      "title": "Operation Harbor Grid",
+      "description": "Map custom untuk latihan jalur serbu sisi timur.",
+      "imageDataUrl": "data:image/png;base64,REPLACE_WITH_REAL_IMAGE_DATA",
+      "createdAt": "2026-04-06T00:00:00.000Z",
+      "updatedAt": "2026-04-06T00:00:00.000Z",
+      "createdBy": {
+        "id": "strategicadmin",
+        "username": "strategicadmin",
+        "label": "Strategic Admin"
+      },
+      "board": {
+        "actions": [],
+        "viewport": null
+      }
+    },
+    "strategicSaveMainPlanner": {
+      "id": "main-strategy-001",
+      "ownerId": "strategicadmin",
+      "ownerUsername": "strategicadmin",
+      "ownerLabel": "Strategic Admin",
+      "title": "Route North Push",
+      "note": "Masuk dari utara lalu potong supply lane.",
+      "createdAt": "2026-04-06T00:00:00.000Z",
+      "updatedAt": "2026-04-06T00:00:00.000Z",
+      "actionCount": 2,
+      "categoryCount": 8,
+      "thumbnailDataUrl": "data:image/webp;base64,REPLACE_WITH_RENDERED_THUMBNAIL",
+      "snapshot": {
+        "actions": [
+          {
+            "id": "stroke-001",
+            "type": "stroke",
+            "tool": "pen",
+            "color": "#E9C349",
+            "size": 14,
+            "points": [
+              { "x": 1460.5, "y": 3020.25 },
+              { "x": 2510.75, "y": 3540.5 }
+            ]
+          }
+        ],
+        "enabledCategoryIds": [
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "enemy-intel"
+        ],
+        "viewport": {
+          "scale": 0.12,
+          "offsetX": 148,
+          "offsetY": 26,
+          "width": 1380,
+          "height": 860
+        },
+        "frame": {
+          "width": 1380,
+          "height": 860
+        }
+      }
+    },
+    "strategicSaveCustomMap": {
+      "id": "custom-strategy-001",
+      "ownerId": "ronoalpha",
+      "ownerUsername": "ronoalpha",
+      "ownerLabel": "Rono Alpha",
+      "sourceType": "custom-map",
+      "sourceMapId": "custom-map-sample-001",
+      "sourceMapTitle": "Operation Harbor Grid",
+      "title": "Custom Recon Route",
+      "note": "Pakailah route cepat ke ridge timur.",
+      "createdAt": "2026-04-06T00:00:00.000Z",
+      "updatedAt": "2026-04-06T00:00:00.000Z",
+      "actionCount": 1,
+      "categoryCount": 0,
+      "thumbnailDataUrl": "data:image/webp;base64,REPLACE_WITH_RENDERED_THUMBNAIL",
+      "snapshot": {
+        "actions": [
+          {
+            "id": "text-001",
+            "type": "text",
+            "x": 820,
+            "y": 560,
+            "text": "Rally Point",
+            "color": "#67E8F9",
+            "size": 20
+          }
+        ],
+        "enabledCategoryIds": [],
+        "viewport": {
+          "scale": 0.82,
+          "offsetX": 64,
+          "offsetY": 48
+        },
+        "frame": {
+          "width": 1280,
+          "height": 720
+        },
+        "customMap": {
+          "mapId": "custom-map-sample-001",
+          "title": "Operation Harbor Grid",
+          "imageDataUrl": "data:image/png;base64,REPLACE_WITH_REAL_IMAGE_DATA",
+          "width": 2048,
+          "height": 2048
+        }
+      }
+    }
+  }
+}

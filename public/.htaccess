@@ -1,0 +1,33 @@
+# Team DUKUN PASKUS 791
+# Jevier - Frontend
+# Teddy - Backend
+# Lee - Cyber Sector
+# Osiris - Bot Manufactur
+# Internal proprietary source notice.
+
+Options -Indexes
+
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "DENY"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Cross-Origin-Resource-Policy "same-site"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set X-Permitted-Cross-Domain-Policies "none"
+  Header always set X-Download-Options "noopen"
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://discord.com https://cdn.discordapp.com https://media.discordapp.net; worker-src 'self' blob:;"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^(?:\.git|server|src|node_modules)(?:/|$) - [F,L,NC]
+  RewriteRule ^(?:\.env(?:\..*)?|package(?:-lock)?\.json|vite\.config\.[^.]+|eslint\.config\.[^.]+|README\.md|DEPLOY\.md|SECURITY\.md)$ - [F,L,NC]
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

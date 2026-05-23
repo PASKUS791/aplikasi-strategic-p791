@@ -1,60 +1,76 @@
 # Aplikasi Strategic P791
 
-Status awal proyek untuk aplikasi resmi anggota PASKUS791.
+Project aplikasi resmi berbayar untuk anggota PASKUS791. Basis frontend dan backend awal diambil dari repo referensi yang diberikan, lalu dibersihkan menjadi branding Strategic tanpa unsur nama lama.
 
-## Ringkasan
+## Status
 
-Aplikasi Strategic P791 adalah rencana aplikasi berbayar untuk anggota PASKUS791. Arah produk dari hasil meeting 23 Mei 2026:
+- Repo organisasi: `PASKUS791/aplikasi-strategic-p791`
+- Preview pengembangan: `https://paskus791.github.io/aplikasi-strategic-p791/`
+- Domain utama sementara: `https://strategic.so791.com`
+- Domain utama masih menjalankan halaman `APPS STATUS COMINGSOON` dari server via Cloudflare Tunnel.
 
-- Pusat informasi dan strategi PvE resmi PASKUS791.
-- Akses lintas perangkat: web lebih dulu, lalu evaluasi desktop/mobile.
-- Data operasional diperbarui oleh tim scouting dan PTI melalui alur validasi.
-- Proteksi akses memakai kombinasi akun, lisensi device, batas device, watermark, dan audit login.
-- Beta test dilakukan oleh PTI dan tim scouting sebelum rilis anggota.
-
-Halaman publik saat ini hanya menampilkan status:
-
-> APPS STATUS COMINGSOON  
-> aplikasi resmi untuk anggota paskus791 dan berbayar
-
-## Struktur Repo
+## Struktur Utama
 
 ```text
-site/                         Halaman coming soon dan GitHub Pages preview
-site/data/app-status.json     Data status publik yang bisa diperbarui tim
-docs/                         Ringkasan meeting dan rencana pengembangan
-deploy/server/                Paket deployment server + Cloudflare Tunnel
-.github/workflows/pages.yml   Deploy otomatis ke GitHub Pages
+strategic-site/            Entry HTML aplikasi React/Vite Strategic
+src/strategic/             Planner, custom maps, saves, user access, dan layout aplikasi
+src/lib/                   API client, auth provider, synced resources
+strategic-api-backend/     Backend Express/MongoDB untuk API Strategic
+backend-contract/          Contoh payload, seed, dan kontrak API Strategic
+site/                      Halaman coming soon untuk strategic.so791.com
+deploy/server/             Service server + Cloudflare Tunnel untuk halaman coming soon
+.github/workflows/         Deploy otomatis GitHub Pages
 ```
 
-## Jalankan Lokal
+## Jalankan Frontend Lokal
 
 ```bash
-cd site
-python3 -m http.server 4173
+npm install
+npm run dev
 ```
 
-Buka `http://localhost:4173`.
-
-## Update Data Publik
-
-Untuk update status yang tampil di halaman publik, edit:
+Buka:
 
 ```text
-site/data/app-status.json
+http://localhost:5174
 ```
 
-Lalu commit dan push ke GitHub. Halaman akan mengambil file itu ulang secara berkala dengan cache-busting ringan.
+## Build
 
-Catatan penting: data strategi, marker map, scouting, user berbayar, lisensi device, dan informasi internal tidak boleh dimasukkan ke repo publik. Untuk data real-time aplikasi sebenarnya, gunakan backend/private repository dengan autentikasi.
+```bash
+npm run build
+npm run preview
+```
 
-## Domain
-
-Arsitektur domain disiapkan seperti ini:
+Output build frontend ada di:
 
 ```text
-GitHub Pages                -> preview/pembesaran frontend aplikasi
-strategic.so791.com         -> halaman coming soon dari server via Cloudflare Tunnel
+dist-strategic/
 ```
 
-Selama aplikasi masih dibuat, domain utama menampilkan halaman coming soon dari server. Setelah MVP siap, frontend bisa tetap dibesarkan di GitHub Pages atau dipindahkan ke server yang sama sesuai kebutuhan keamanan aplikasi berbayar.
+## Environment Frontend
+
+```env
+VITE_STRATEGIC_SITE_URL=http://localhost:5174
+VITE_STRATEGIC_API_BASE_URL=https://api.strategic.so791.com
+```
+
+Untuk GitHub Pages, workflow memakai:
+
+```env
+VITE_PUBLIC_BASE_PATH=/aplikasi-strategic-p791/
+```
+
+## Catatan Keamanan
+
+- Jangan commit password asli, token Cloudflare, private key, atau secret production.
+- Data strategi internal, data anggota berbayar, marker sensitif, dan lisensi device harus masuk backend/private storage.
+- Repo publik ini aman untuk frontend preview dan dokumentasi teknis awal.
+
+## Tahap Pengembangan Berikutnya
+
+1. Finalisasi branding visual Strategic P791.
+2. Aktifkan backend Strategic privat dengan MongoDB.
+3. Bangun login anggota, role PTI/scouting/admin, audit login, dan batas device.
+4. Pisahkan data publik dan data berbayar agar GitHub Pages hanya memuat frontend.
+5. Tambahkan deployment backend ke server/tunnel setelah MVP siap.

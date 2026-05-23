@@ -4,7 +4,7 @@ Dokumen ini adalah ringkasan public-safe dari notulen meeting pengembangan aplik
 
 ## Arah Produk
 
-Aplikasi dirancang sebagai aplikasi resmi PASKUS791 untuk mendukung kebutuhan PvE anggota. Konsepnya berkembang dari ide HCO/map planner, tetapi dibuat lebih umum agar bisa dipakai anggota yang berlangganan.
+Aplikasi dirancang sebagai aplikasi resmi PASKUS791 untuk mendukung kebutuhan PvE anggota. Konsepnya berkembang dari ide map planner strategis, tetapi dibuat lebih umum agar bisa dipakai anggota yang berlangganan.
 
 Nilai utama aplikasi:
 
@@ -40,4 +40,3 @@ Nilai utama aplikasi:
 - Gunakan GitHub untuk kolaborasi kode dan status publik.
 - Pisahkan data publik dari data internal.
 - Buat SOP scouting, validasi, upload, dan review berkala.
-
