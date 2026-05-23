@@ -68,7 +68,11 @@ async function ensurePrimaryAdmin(seedPayload) {
     seedPayload?.users?.find((entry) => entry.isPrimaryAdmin) || null;
 
   const username = normalizeStrategicUsername(
-    process.env.PRIMARY_STRATEGIC_USERNAME || seedAdmin?.username || "strategicadmin",
+    process.env.PRIMARY_STRATEGIC_OPERATOR_ID ||
+      process.env.PRIMARY_STRATEGIC_USERNAME ||
+      seedAdmin?.operatorId ||
+      seedAdmin?.username ||
+      "strategicadmin",
   );
   const label = String(
     process.env.PRIMARY_STRATEGIC_LABEL || seedAdmin?.label || "Strategic Admin",
@@ -77,7 +81,11 @@ async function ensurePrimaryAdmin(seedPayload) {
     process.env.PRIMARY_STRATEGIC_UNIT || seedAdmin?.unit || "Strategic Command",
   ).trim();
   const password = String(
-    process.env.PRIMARY_STRATEGIC_PASSWORD || seedAdmin?.password || "ChangeMeStrategic123!",
+    process.env.PRIMARY_STRATEGIC_SECURITY_KEY ||
+      process.env.PRIMARY_STRATEGIC_PASSWORD ||
+      seedAdmin?.securityKey ||
+      seedAdmin?.password ||
+      "ChangeMeStrategic123!",
   );
 
   await StrategicUser.findOneAndUpdate(
@@ -109,7 +117,7 @@ async function ensureSeedUsers(seedPayload) {
   const seedUsers = Array.isArray(seedPayload?.users) ? seedPayload.users : [];
 
   for (const entry of seedUsers) {
-    const username = normalizeStrategicUsername(entry.username);
+    const username = normalizeStrategicUsername(entry.operatorId || entry.username);
 
     if (!username) {
       continue;
@@ -126,7 +134,7 @@ async function ensureSeedUsers(seedPayload) {
       nama: String(entry.nama || entry.label || username),
       unit: String(entry.unit || "Strategic Command"),
       scope: "strategic",
-      password: await hashPassword(entry.password || "ChangeMeStrategic123!"),
+      password: await hashPassword(entry.securityKey || entry.password || "ChangeMeStrategic123!"),
       access: normalizeStrategicAccess(entry.access),
       isPrimaryAdmin: entry.isPrimaryAdmin === true,
       active: true,

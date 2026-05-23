@@ -7,8 +7,8 @@ Content-Type: {{json}}
 
 {
   "scope": "strategic",
-  "username": "strategicadmin",
-  "password": "ChangeMeStrategic123!"
+  "operatorId": "strategicadmin",
+  "securityKey": "ChangeMeStrategic123!"
 }
 
 ###
@@ -86,10 +86,10 @@ POST {{baseUrl}}/api/strategic/users
 Content-Type: {{json}}
 
 {
-  "username": "ronoalpha",
+  "operatorId": "ronoalpha",
   "label": "Rono Alpha",
   "unit": "Strategic Tactical Cell",
-  "password": "ChangeMeStrategic123!"
+  "securityKey": "ChangeMeStrategic123!"
 }
 
 ###

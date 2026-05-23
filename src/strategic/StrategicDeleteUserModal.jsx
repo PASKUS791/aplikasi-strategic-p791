@@ -51,7 +51,9 @@ export default function StrategicDeleteUserModal({ userEntry, onCancel, onConfir
             <p className="mt-2 font-sans text-xl font-bold uppercase text-stone-100">
               {userEntry.label}
             </p>
-            <p className="mt-1 text-sm text-stone-400">@{userEntry.username}</p>
+            <p className="mt-1 text-sm text-stone-400">
+              Operator ID: @{userEntry.operatorId || userEntry.username}
+            </p>
           </div>
 
           <p className="text-sm leading-7 text-stone-300">

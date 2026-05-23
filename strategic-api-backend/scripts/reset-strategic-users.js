@@ -14,14 +14,30 @@ dotenv.config({
   path: path.resolve(__dirname, "../.env"),
 });
 
-const KEEP_USERNAME = String(process.env.PRIMARY_STRATEGIC_USERNAME || "strategicadmin")
+const KEEP_USERNAME = String(
+  process.env.PRIMARY_STRATEGIC_OPERATOR_ID ||
+    process.env.PRIMARY_STRATEGIC_USERNAME ||
+    "strategicadmin",
+)
   .trim()
   .toLowerCase();
-const KEEP_PASSWORD = String(process.env.PRIMARY_STRATEGIC_PASSWORD || "ChangeMeStrategic123!");
-const NEW_ADMIN_USERNAME = String(process.env.NEW_STRATEGIC_ADMIN_USERNAME || "adminstrategic")
+const KEEP_PASSWORD = String(
+  process.env.PRIMARY_STRATEGIC_SECURITY_KEY ||
+    process.env.PRIMARY_STRATEGIC_PASSWORD ||
+    "ChangeMeStrategic123!",
+);
+const NEW_ADMIN_USERNAME = String(
+  process.env.NEW_STRATEGIC_ADMIN_OPERATOR_ID ||
+    process.env.NEW_STRATEGIC_ADMIN_USERNAME ||
+    "adminstrategic",
+)
   .trim()
   .toLowerCase();
-const NEW_ADMIN_PASSWORD = String(process.env.NEW_STRATEGIC_ADMIN_PASSWORD || "ChangeMeAdminStrategic123!");
+const NEW_ADMIN_PASSWORD = String(
+  process.env.NEW_STRATEGIC_ADMIN_SECURITY_KEY ||
+    process.env.NEW_STRATEGIC_ADMIN_PASSWORD ||
+    "ChangeMeAdminStrategic123!",
+);
 
 async function runReset() {
   if (!process.env.DB) {

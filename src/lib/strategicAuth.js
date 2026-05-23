@@ -52,8 +52,8 @@ function AuthProviderInner({ children }) {
   }, [refreshSession]);
 
   const login = useCallback(
-    async (_scope, username, password) => {
-      const session = await loginStrategic(username, password);
+    async (_scope, operatorId, securityKey) => {
+      const session = await loginStrategic(operatorId, securityKey);
       const nextUser = session?.user || null;
       setUser(nextUser);
       setError("");

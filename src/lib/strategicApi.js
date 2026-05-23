@@ -80,6 +80,9 @@ export function normalizeStrategicSessionUser(user) {
     return null;
   }
 
+  const operatorId = String(user.operatorId || user.username || "")
+    .trim()
+    .toLowerCase();
   const normalizedAccess =
     user?.access && typeof user.access === "object"
       ? {
@@ -90,10 +93,11 @@ export function normalizeStrategicSessionUser(user) {
       : null;
 
   return {
-    id: String(user.id || user.username || "strategic-user"),
-    username: String(user.username || "").trim().toLowerCase(),
-    nama: String(user.label || user.nama || user.username || "Strategic Admin"),
-    label: String(user.label || user.nama || user.username || "Strategic Admin"),
+    id: String(user.id || operatorId || "strategic-user"),
+    username: operatorId,
+    operatorId,
+    nama: String(user.label || user.nama || operatorId || "Strategic Admin"),
+    label: String(user.label || user.nama || operatorId || "Strategic Admin"),
     unit: String(user.unit || "Strategic Command"),
     scope: "strategic",
     access: normalizedAccess,
@@ -128,13 +132,16 @@ export function clearStoredStrategicSession() {
   clearStoredJson(Strategic_SESSION_STORAGE_KEY);
 }
 
-export async function loginStrategic(username, password) {
+export async function loginStrategic(operatorId, securityKey) {
+  const normalizedOperatorId = String(operatorId || "").trim().toLowerCase();
   const payload = await strategicApiFetch("/api/auth/login", {
     method: "POST",
     body: {
       scope: "strategic",
-      username: String(username || "").trim().toLowerCase(),
-      password,
+      operatorId: normalizedOperatorId,
+      securityKey,
+      username: normalizedOperatorId,
+      password: securityKey,
     },
   });
 
@@ -316,9 +323,20 @@ export async function listStrategicUsersApi() {
 }
 
 export async function createStrategicUserAccount(payload) {
+  const operatorId = String(payload?.operatorId || payload?.username || "")
+    .trim()
+    .toLowerCase();
+  const securityKey = payload?.securityKey || payload?.password;
+
   return strategicApiFetch("/api/strategic/users", {
     method: "POST",
-    body: payload,
+    body: {
+      ...payload,
+      operatorId,
+      securityKey,
+      username: operatorId,
+      password: securityKey,
+    },
   });
 }
 

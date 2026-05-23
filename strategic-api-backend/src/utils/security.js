@@ -241,6 +241,8 @@ function getLockedLogin(username, req, config) {
 
 function hasSuspiciousLoginPayload(body) {
   const joined = [
+    String(body?.operatorId || ""),
+    String(body?.securityKey || ""),
     String(body?.username || ""),
     String(body?.password || ""),
     String(body?.scope || ""),

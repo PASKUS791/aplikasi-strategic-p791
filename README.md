@@ -8,6 +8,7 @@ Project aplikasi resmi berbayar untuk anggota PASKUS791. Basis frontend dan back
 - Preview pengembangan: `https://paskus791.github.io/aplikasi-strategic-p791/`
 - Domain utama sementara: `https://strategic.so791.com`
 - Domain utama masih menjalankan halaman `APPS STATUS COMINGSOON` dari server via Cloudflare Tunnel.
+- Login aplikasi memakai istilah Operator ID dan Security Key.
 
 ## Struktur Utama
 
@@ -63,7 +64,8 @@ VITE_PUBLIC_BASE_PATH=/aplikasi-strategic-p791/
 
 ## Catatan Keamanan
 
-- Jangan commit password asli, token Cloudflare, private key, atau secret production.
+- Jangan commit password/Security Key asli, token Cloudflare, private key, atau secret production.
+- Pakai env/private storage di backend untuk credential produksi.
 - Data strategi internal, data anggota berbayar, marker sensitif, dan lisensi device harus masuk backend/private storage.
 - Repo publik ini aman untuk frontend preview dan dokumentasi teknis awal.
 

@@ -22,6 +22,7 @@ function serializeStrategicUser(userDoc) {
   return {
     id: String(userDoc._id),
     username: normalizeStrategicUsername(userDoc.username),
+    operatorId: normalizeStrategicUsername(userDoc.username),
     label: String(userDoc.label || userDoc.nama || userDoc.username || "Strategic User"),
     nama: String(userDoc.nama || userDoc.label || userDoc.username || "Strategic User"),
     unit: String(userDoc.unit || "Strategic Command"),

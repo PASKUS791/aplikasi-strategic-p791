@@ -4,19 +4,19 @@
     "apiBaseUrl": "https://api.strategic.so791.com",
     "scope": "strategic",
     "notes": [
-      "Password di file seed ini masih plain text supaya tim backend gampang mapping saat bootstrap awal.",
-      "Saat masuk backend production, password wajib di-hash di server dan jangan disimpan mentah di database.",
-      "Username semua dibuat lowercase karena frontend Strategic menormalisasi username ke lowercase."
+      "Security key di file seed ini hanya contoh bootstrap, bukan kunci production.",
+      "Saat masuk backend production, security key wajib di-hash di server dan jangan disimpan mentah di database.",
+      "Operator ID semua dibuat lowercase karena frontend Strategic menormalisasi Operator ID ke lowercase."
     ]
   },
   "users": [
     {
-      "username": "strategicadmin",
+      "operatorId": "strategicadmin",
       "label": "Strategic Admin",
       "nama": "Strategic Admin",
       "unit": "Strategic Command",
       "scope": "strategic",
-      "password": "ChangeMeStrategic123!",
+      "securityKey": "ChangeMeStrategic123!",
       "access": {
         "mainPlanner": true,
         "customMaps": true,
@@ -25,12 +25,12 @@
       "isPrimaryAdmin": true
     },
     {
-      "username": "adminstrategic",
+      "operatorId": "adminstrategic",
       "label": "Admin Strategic",
       "nama": "Admin Strategic",
       "unit": "Strategic Command",
       "scope": "strategic",
-      "password": "ChangeMeAdminStrategic123!",
+      "securityKey": "ChangeMeAdminStrategic123!",
       "access": {
         "mainPlanner": true,
         "customMaps": true,

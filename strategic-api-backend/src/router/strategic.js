@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get("/users", requireAuth, requirePrimaryAdmin, listUsers);
 router.post("/users", requireAuth, requirePrimaryAdmin, createUser);
-router.delete("/users/:username", requireAuth, requirePrimaryAdmin, deleteUser);
+router.delete("/users/:operatorId", requireAuth, requirePrimaryAdmin, deleteUser);
 router.post(
   "/strategic-saves/:id/dispatch",
   requireAuth,

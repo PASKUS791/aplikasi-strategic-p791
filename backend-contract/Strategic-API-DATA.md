@@ -17,10 +17,12 @@ Request body:
 ```json
 {
   "scope": "strategic",
-  "username": "strategicadmin",
-  "password": "ChangeMeStrategic123!"
+  "operatorId": "strategicadmin",
+  "securityKey": "ChangeMeStrategic123!"
 }
 ```
+
+`username` dan `password` masih diterima backend sebagai alias lama, tapi format baru yang dipakai frontend adalah `operatorId` dan `securityKey`.
 
 Response minimal:
 
@@ -29,6 +31,7 @@ Response minimal:
   "user": {
     "id": "strategicadmin",
     "username": "strategicadmin",
+    "operatorId": "strategicadmin",
     "label": "Strategic Admin",
     "nama": "Strategic Admin",
     "unit": "Strategic Command",
@@ -49,6 +52,7 @@ Response saat login masih valid:
   "user": {
     "id": "strategicadmin",
     "username": "strategicadmin",
+    "operatorId": "strategicadmin",
     "label": "Strategic Admin",
     "nama": "Strategic Admin",
     "unit": "Strategic Command",
@@ -146,6 +150,7 @@ Response minimal:
     {
       "id": "strategicadmin",
       "username": "strategicadmin",
+      "operatorId": "strategicadmin",
       "label": "Strategic Admin",
       "unit": "Strategic Command",
       "scope": "strategic",
@@ -167,10 +172,10 @@ Request body:
 
 ```json
 {
-  "username": "ronoalpha",
+  "operatorId": "ronoalpha",
   "label": "Rono Alpha",
   "unit": "Strategic Tactical Cell",
-  "password": "ChangeMeStrategic123!"
+  "securityKey": "ChangeMeStrategic123!"
 }
 ```
 
@@ -184,7 +189,7 @@ Response minimal:
 
 ### 8. Hapus User Strategic
 
-`DELETE /api/strategic/users/:username`
+`DELETE /api/strategic/users/:operatorId`
 
 Response minimal:
 
@@ -313,8 +318,8 @@ Array of object:
 
 ## Catatan Backend
 
-- frontend Strategic menormalisasi username ke lowercase
-- user `strategicadmin` dianggap admin utama oleh frontend
+- frontend Strategic menormalisasi Operator ID ke lowercase
+- Operator ID `strategicadmin` dianggap admin utama oleh frontend
 - user admin utama tidak wajib ada di `strategic.mapPlannerUsers`, karena access-nya otomatis full
 - image dan thumbnail untuk custom map / strategic save disimpan sebagai `data URL`
 - kalau backend mau lebih efisien, image bisa dipindah ke object storage lalu field `imageDataUrl` dan `thumbnailDataUrl` diganti ke URL publik, tapi frontend saat ini paling aman tetap dengan format string biasa

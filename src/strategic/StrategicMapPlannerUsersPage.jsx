@@ -321,12 +321,13 @@ export default function StrategicMapPlannerUsersPage() {
           <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
             <label className="grid gap-2">
               <span className="font-public text-[10px] uppercase tracking-[0.18em] text-stone-400">
-                Username
+                Operator ID
               </span>
               <input
                 value={formState.username}
                 onChange={handleChange("username")}
                 placeholder="contoh: strategic.alpha"
+                autoComplete="username"
                 className="rounded-[18px] border border-white/8 bg-black/20 px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-lime-300/24"
               />
             </label>
@@ -356,13 +357,14 @@ export default function StrategicMapPlannerUsersPage() {
 
             <label className="grid gap-2">
               <span className="font-public text-[10px] uppercase tracking-[0.18em] text-stone-400">
-                Password
+                Security Key
               </span>
               <input
                 type="password"
                 value={formState.password}
                 onChange={handleChange("password")}
                 placeholder="Minimal 8 karakter"
+                autoComplete="new-password"
                 className="rounded-[18px] border border-white/8 bg-black/20 px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-lime-300/24"
               />
             </label>
@@ -424,7 +426,9 @@ export default function StrategicMapPlannerUsersPage() {
                         </span>
                       ) : null}
                     </div>
-                    <p className="mt-1 text-sm text-stone-400">@{entry.username}</p>
+                    <p className="mt-1 text-sm text-stone-400">
+                      Operator ID: @{entry.operatorId || entry.username}
+                    </p>
                     <p className="mt-1 font-public text-[10px] uppercase tracking-[0.16em] text-stone-500">
                       {entry.unit}
                     </p>

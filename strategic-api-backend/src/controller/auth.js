@@ -18,14 +18,21 @@ const {
   getSessionCookieName,
   signSessionToken,
 } = require("../utils/session");
-const { serializeStrategicUser } = require("../utils/strategicUsers");
+const {
+  normalizeStrategicUsername,
+  serializeStrategicUser,
+} = require("../utils/strategicUsers");
 const { resolveAuthenticatedUser } = require("../middleware/authuser");
 
 const loginSchema = Joi.object({
   scope: Joi.string().valid("strategic").required(),
-  username: Joi.string().trim().lowercase().min(3).max(60).required(),
-  password: Joi.string().min(8).max(128).required(),
-});
+  operatorId: Joi.string().trim().lowercase().min(3).max(60),
+  securityKey: Joi.string().min(8).max(128),
+  username: Joi.string().trim().lowercase().min(3).max(60),
+  password: Joi.string().min(8).max(128),
+})
+  .or("operatorId", "username")
+  .or("securityKey", "password");
 const securityConfig = buildSecurityConfig();
 
 exports.login = async (req, res) => {
@@ -49,7 +56,9 @@ exports.login = async (req, res) => {
     });
   }
 
-  const lockState = getLockedLogin(value.username, req, securityConfig);
+  const operatorId = normalizeStrategicUsername(value.operatorId || value.username);
+  const securityKey = String(value.securityKey || value.password || "");
+  const lockState = getLockedLogin(operatorId, req, securityConfig);
 
   if (lockState.locked) {
     return sendSecurityBlock(
@@ -72,12 +81,12 @@ exports.login = async (req, res) => {
 
   const user = await StrategicUser.findOne({
     scope: "strategic",
-    username: value.username,
+    username: operatorId,
     active: true,
   }).select("+password");
 
   if (!user) {
-    const state = registerFailedLogin(value.username, req, securityConfig);
+    const state = registerFailedLogin(operatorId, req, securityConfig);
 
     if (state.lockUntil && state.lockUntil > Date.now()) {
       return sendSecurityBlock(
@@ -101,13 +110,13 @@ exports.login = async (req, res) => {
       );
     }
 
-    return res.status(400).json({ message: "Username atau password salah." });
+    return res.status(400).json({ message: "Operator ID atau security key salah." });
   }
 
-  const isValidPassword = await comparePassword(value.password, user.password);
+  const isValidPassword = await comparePassword(securityKey, user.password);
 
   if (!isValidPassword) {
-    const state = registerFailedLogin(value.username, req, securityConfig);
+    const state = registerFailedLogin(operatorId, req, securityConfig);
 
     if (state.lockUntil && state.lockUntil > Date.now()) {
       return sendSecurityBlock(
@@ -131,10 +140,10 @@ exports.login = async (req, res) => {
       );
     }
 
-    return res.status(400).json({ message: "Username atau password salah." });
+    return res.status(400).json({ message: "Operator ID atau security key salah." });
   }
 
-  clearFailedLogins(value.username, req);
+  clearFailedLogins(operatorId, req);
   user.lastLoginAt = new Date();
   await user.save();
 

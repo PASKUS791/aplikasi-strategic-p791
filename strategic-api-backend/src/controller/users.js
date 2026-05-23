@@ -15,16 +15,20 @@ const {
 const { syncMapPlannerUsersResource } = require("../utils/seed");
 
 const createUserSchema = Joi.object({
-  username: Joi.string().trim().lowercase().min(3).max(60).required(),
+  operatorId: Joi.string().trim().lowercase().min(3).max(60),
+  username: Joi.string().trim().lowercase().min(3).max(60),
   label: Joi.string().trim().min(2).max(100).required(),
   unit: Joi.string().trim().min(2).max(120).required(),
-  password: Joi.string().min(8).max(128).required(),
+  securityKey: Joi.string().min(8).max(128),
+  password: Joi.string().min(8).max(128),
   access: Joi.object({
     mainPlanner: Joi.boolean(),
     customMaps: Joi.boolean(),
     saves: Joi.boolean(),
   }).optional(),
-});
+})
+  .or("operatorId", "username")
+  .or("securityKey", "password");
 
 async function removeOwnedCustomMaps(userDocument) {
   const customMapResource = await StrategicResource.findOne({ name: "strategic.customMaps" });
@@ -95,11 +99,12 @@ exports.createUser = async (req, res) => {
     });
   }
 
-  const username = normalizeStrategicUsername(value.username);
+  const username = normalizeStrategicUsername(value.operatorId || value.username);
+  const securityKey = String(value.securityKey || value.password || "");
   const existing = await StrategicUser.findOne({ scope: "strategic", username }).select("_id");
 
   if (existing) {
-    return res.status(409).json({ message: "Username Strategic sudah dipakai." });
+    return res.status(409).json({ message: "Operator ID Strategic sudah dipakai." });
   }
 
   const user = await StrategicUser.create({
@@ -108,7 +113,7 @@ exports.createUser = async (req, res) => {
     nama: value.label,
     unit: value.unit,
     scope: "strategic",
-    password: await hashPassword(value.password),
+    password: await hashPassword(securityKey),
     access: normalizeStrategicAccess(value.access),
     active: true,
     isPrimaryAdmin: false,
@@ -124,7 +129,7 @@ exports.createUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
-  const username = normalizeStrategicUsername(req.params.username);
+  const username = normalizeStrategicUsername(req.params.operatorId || req.params.username);
   const user = await StrategicUser.findOne({ scope: "strategic", username });
 
   if (!user) {

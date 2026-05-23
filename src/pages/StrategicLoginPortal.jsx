@@ -139,8 +139,8 @@ export default function StrategicLoginPortal() {
   useAnimatedFavicon();
   const [phase, setPhase] = useState("intro");
   const [progress, setProgress] = useState(0);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [operatorId, setOperatorId] = useState("");
+  const [securityKey, setSecurityKey] = useState("");
   const [error, setError] = useState("");
   const [securityAlert, setSecurityAlert] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -234,7 +234,7 @@ export default function StrategicLoginPortal() {
 
     window.setTimeout(async () => {
       try {
-        await login("strategic", username, password);
+        await login("strategic", operatorId, securityKey);
         navigate("/dashboard", { replace: true });
       } catch (authError) {
         const attackPayload = authError?.payload?.securityEvent;
@@ -334,15 +334,15 @@ export default function StrategicLoginPortal() {
                         Operator ID
                       </span>
                       <input
-                        value={username}
-                        onChange={(event) => setUsername(event.target.value)}
+                        value={operatorId}
+                        onChange={(event) => setOperatorId(event.target.value)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {
                             handleAuthenticate();
                           }
                         }}
                         autoComplete="username"
-                        placeholder="ENTER Strategic USERNAME"
+                        placeholder="ENTER OPERATOR ID"
                         className="rounded-[20px] border border-white/8 bg-black/20 px-4 py-4 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-lime-300"
                       />
                     </label>
@@ -353,8 +353,8 @@ export default function StrategicLoginPortal() {
                       </span>
                       <input
                         type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
+                        value={securityKey}
+                        onChange={(event) => setSecurityKey(event.target.value)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {
                             handleAuthenticate();

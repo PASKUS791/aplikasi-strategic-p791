@@ -19,7 +19,7 @@ Tujuannya supaya gampang dipindahkan ke `api.strategic.so791.com` dan familier b
 - `GET /api/events`
 - `GET /api/strategic/users`
 - `POST /api/strategic/users`
-- `DELETE /api/strategic/users/:username`
+- `DELETE /api/strategic/users/:operatorId`
 - `POST /api/strategic/strategic-saves/:id/dispatch`
 - `POST /api/strategic/server-addresses/dispatch`
 - `PUT /api/strategic/server-addresses/:messageId`
@@ -55,13 +55,15 @@ npm run reset:strategic-users
 
 Default hasil reset:
 
-- admin utama: `strategicadmin` / password dari `PRIMARY_STRATEGIC_PASSWORD`
-- admin tambahan: `adminstrategic` / password default `ChangeMeAdminStrategic123!`
+- admin utama: Operator ID `strategicadmin` / security key dari `PRIMARY_STRATEGIC_SECURITY_KEY`
+- admin tambahan: Operator ID `adminstrategic` / security key contoh `ChangeMeAdminStrategic123!`
 
 Opsional override admin tambahan via env:
 
-- `NEW_STRATEGIC_ADMIN_USERNAME`
-- `NEW_STRATEGIC_ADMIN_PASSWORD`
+- `NEW_STRATEGIC_ADMIN_OPERATOR_ID`
+- `NEW_STRATEGIC_ADMIN_SECURITY_KEY`
+
+Alias lama `PRIMARY_STRATEGIC_USERNAME`, `PRIMARY_STRATEGIC_PASSWORD`, `NEW_STRATEGIC_ADMIN_USERNAME`, dan `NEW_STRATEGIC_ADMIN_PASSWORD` masih didukung supaya deployment lama tidak langsung putus.
 
 ### Env penting untuk dispatch Discord
 
