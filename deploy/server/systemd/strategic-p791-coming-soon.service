@@ -1,0 +1,21 @@
+[Unit]
+Description=Strategic P791 coming soon static server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/strategic-p791-coming-soon
+ExecStart=/usr/bin/python3 -m http.server 17912 --bind 127.0.0.1 --directory /var/www/strategic-p791-coming-soon
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
+

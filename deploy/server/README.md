@@ -16,11 +16,12 @@ Tujuan:
 ## Komponen
 
 ```text
-nginx/strategic-p791-coming-soon.conf     Nginx lokal di 127.0.0.1:8787
-cloudflared/config.example.yml            Contoh config Cloudflare Tunnel
-scripts/sync-coming-soon.sh               Pull repo dan sync site/ ke web root
-systemd/strategic-p791-sync.service       Service sync sekali jalan
-systemd/strategic-p791-sync.timer         Timer sync berkala
+systemd/strategic-p791-coming-soon.service Static service lokal 127.0.0.1:17912
+cloudflared/config.example.yml             Contoh config Cloudflare Tunnel
+scripts/sync-coming-soon.sh                Pull repo dan sync site/ ke web root
+systemd/strategic-p791-sync.service        Service sync sekali jalan
+systemd/strategic-p791-sync.timer          Timer sync berkala
+nginx/strategic-p791-coming-soon.conf      Opsi Nginx jika port 8787 kosong
 ```
 
 ## Path Server Yang Disarankan
@@ -49,13 +50,12 @@ sudo chown -R "$USER":"$USER" /opt/strategic-p791
 git clone https://github.com/YerikhoArfensiasEffendi/aplikasi-strategic-p791.git /opt/strategic-p791/repo
 ```
 
-4. Pasang Nginx config:
+4. Pasang service static coming soon:
 
 ```bash
-sudo cp /opt/strategic-p791/repo/deploy/server/nginx/strategic-p791-coming-soon.conf /etc/nginx/sites-available/strategic-p791-coming-soon
-sudo ln -s /etc/nginx/sites-available/strategic-p791-coming-soon /etc/nginx/sites-enabled/strategic-p791-coming-soon
-sudo nginx -t
-sudo systemctl reload nginx
+sudo cp /opt/strategic-p791/repo/deploy/server/systemd/strategic-p791-coming-soon.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now strategic-p791-coming-soon.service
 ```
 
 5. Jalankan sync pertama:
@@ -87,10 +87,15 @@ sudo cloudflared service install
 sudo systemctl restart cloudflared
 ```
 
+Tunnel harus mengarah ke:
+
+```text
+http://127.0.0.1:17912
+```
+
 ## Catatan Keamanan
 
 - Jangan commit token tunnel, password SSH, private key, atau file credential Cloudflare.
 - Untuk sync dari repo publik, server cukup pull lewat HTTPS.
 - Jika repo nanti dibuat private, pakai deploy key khusus read-only.
 - Halaman coming soon boleh publik; data aplikasi berbayar tetap harus di backend privat.
-
