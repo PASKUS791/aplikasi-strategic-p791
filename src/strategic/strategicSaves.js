@@ -15,6 +15,7 @@ export const DEFAULT_PLANNER_STATE = {
   actions: [],
   enabledCategoryIds: RONOGRAD_MAP_DATA.categories.map((category) => category.id),
   viewport: null,
+  customMarkers: [],
 };
 
 const LEGACY_ENEMY_CATEGORY_IDS = [
@@ -65,6 +66,7 @@ export function normalizePlannerState(value) {
             offsetY: value.viewport.offsetY,
           }
         : null,
+    customMarkers: Array.isArray(value.customMarkers) ? value.customMarkers : [],
   };
 }
 
@@ -83,6 +85,7 @@ export async function applyStrategicSaveToPlanner(save) {
       save.snapshot.enabledCategoryIds,
     ),
     viewport: save.snapshot.viewport ?? null,
+    customMarkers: Array.isArray(save.snapshot.customMarkers) ? save.snapshot.customMarkers : [],
   });
 }
 

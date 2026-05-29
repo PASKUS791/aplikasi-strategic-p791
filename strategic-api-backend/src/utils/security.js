@@ -26,7 +26,7 @@ function buildSecurityConfig() {
   return {
     allowedOrigins: String(
       process.env.Strategic_ALLOWED_ORIGINS ||
-        "http://localhost:5173,https://strategic.so791.com",
+        "http://localhost:5174,https://strategic.so791.com",
     )
       .split(",")
       .map((entry) => normalizeOrigin(entry.trim()))

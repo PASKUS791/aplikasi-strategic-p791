@@ -41,13 +41,15 @@ function signSessionToken(user) {
     isPrimaryAdmin: user.isPrimaryAdmin === true,
   };
 
-  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+  const secret = process.env.ACCESS_TOKEN_SECRET || process.env.JWT_SECRET;
+  return jwt.sign(payload, secret, {
     expiresIn: `${getSessionDays()}d`,
   });
 }
 
 function verifySessionToken(token) {
-  return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  const secret = process.env.ACCESS_TOKEN_SECRET || process.env.JWT_SECRET;
+  return jwt.verify(token, secret);
 }
 
 function readTokenFromRequest(req) {

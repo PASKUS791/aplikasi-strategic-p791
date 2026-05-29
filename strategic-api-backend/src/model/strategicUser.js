@@ -71,6 +71,10 @@ const strategicUserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    subscriptionExpiresAt: {
+      type: Date,
+      default: null,
+    },
     lastLoginAt: {
       type: Date,
       default: null,

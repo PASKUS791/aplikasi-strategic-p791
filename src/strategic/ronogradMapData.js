@@ -114,15 +114,6 @@ const SUPPLEMENTAL_ENEMY_CATEGORIES = [
     iconKey: "enemy-mortar",
   },
   {
-    id: "enemy-anti-air-launcher",
-    listId: 107,
-    name: "Anti-Air Launcher",
-    color: "#fa005a",
-    symbol: "A",
-    symbolColor: "#fff",
-    iconKey: "enemy-anti-air-launcher",
-  },
-  {
     id: "enemy-explosive-target",
     listId: 108,
     name: "Explosive Target",
@@ -864,7 +855,7 @@ export const RONOGRAD_MAP_DATA = {
     {
       id: "5",
       listId: 4,
-      name: "Anti-Air / Mortar",
+      name: "Anti-Air",
       color: "#9c00fa",
       symbol: "A",
       symbolColor: "#fff",
@@ -898,6 +889,7 @@ export const RONOGRAD_MAP_DATA = {
       symbolColor: "#fff",
       iconKey: "bunker",
     },
+    ...SUPPLEMENTAL_ENEMY_CATEGORIES,
     SUPPLEMENTAL_ENEMY_FILTER_CATEGORY,
   ],
   markers: [
@@ -1954,3 +1946,6 @@ export const RONOGRAD_MAP_DATA = {
   ],
   markerProgress: true,
 };
+
+export const SUPPLEMENTAL_ENEMY_CATEGORIES_FOR_MARKERS = SUPPLEMENTAL_ENEMY_CATEGORIES;
+export const SUPPLEMENTAL_ENEMY_CATEGORY_IDS_FOR_MARKERS = SUPPLEMENTAL_ENEMY_CATEGORIES_FOR_MARKERS.map((cat) => cat.id);

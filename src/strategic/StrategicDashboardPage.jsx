@@ -23,8 +23,30 @@ import { RESOURCE_KEYS, useSyncedResource } from "../lib/resources";
 import { getStrategicAccessForUser } from "./strategicAccess";
 import { MarkerCategoryGlyph } from "./markerIcons";
 import { getSupplementalMarkerIntel } from "./markerSupplementalIntel";
-import { RONOGRAD_MAP_DATA } from "./ronogradMapData";
+import {
+  RONOGRAD_MAP_DATA,
+  SUPPLEMENTAL_ENEMY_CATEGORIES_FOR_MARKERS,
+  SUPPLEMENTAL_ENEMY_CATEGORY_IDS_FOR_MARKERS,
+} from "./ronogradMapData";
 import { renderStrategySnapshotDataUrl } from "./snapshotRenderer";
+
+const ENEMY_INTEL_ROOT_CATEGORY_ID = "enemy-intel";
+
+function getEffectiveCategoryId(categoryId) {
+  return SUPPLEMENTAL_ENEMY_CATEGORY_IDS_FOR_MARKERS.includes(categoryId)
+    ? ENEMY_INTEL_ROOT_CATEGORY_ID
+    : categoryId;
+}
+
+function isMarkerCategoryEnabled(categoryId, enabledCategoryIds) {
+  if (enabledCategoryIds.includes(categoryId)) {
+    return true;
+  }
+
+  const effectiveCategoryId = getEffectiveCategoryId(categoryId);
+  return effectiveCategoryId !== categoryId && enabledCategoryIds.includes(effectiveCategoryId);
+}
+
 import {
   DEFAULT_PLANNER_STATE,
   normalizePlannerState,
@@ -53,6 +75,7 @@ const DRAW_TOOL_OPTIONS = [
   { id: "pen", label: "Pencil" },
   { id: "eraser", label: "Delete" },
   { id: "text", label: "Text" },
+  { id: "marker", label: "Add Marker" },
 ];
 const MIN_SCALE = 0.05;
 const MAX_SCALE = 3.4;
@@ -232,6 +255,7 @@ function loadStoredPlannerState(value = DEFAULT_PLANNER_STATE) {
     actions,
     enabledCategoryIds: plannerState.enabledCategoryIds,
     viewport: storedViewport,
+    customMarkers: plannerState.customMarkers || [],
   };
 }
 
@@ -1215,6 +1239,156 @@ function ThreatIntelModal({ marker, intel, onClose }) {
   );
 }
 
+function AddMarkerModal({ draft, onChange, onClose, onSubmit, categories }) {
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[280] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+      onClick={onClose}
+    >
+      <motion.form
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.98 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(event) => event.stopPropagation()}
+        onSubmit={onSubmit}
+        className="w-full max-w-md rounded-[30px] border border-white/8 bg-[#121618]/92 p-6 shadow-[0_28px_100px_rgba(0,0,0,0.48)] backdrop-blur-2xl"
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-white/6 pb-4">
+          <div>
+            <p className="font-public text-[10px] uppercase tracking-[0.28em] text-lime-300">
+              Tactical Planner
+            </p>
+            <h3 className="mt-2 font-sans text-2xl font-bold uppercase text-stone-100">
+              Add New Marker
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-white/8 bg-white/[0.04] px-3 py-2 font-public text-[10px] uppercase tracking-[0.18em] text-stone-300 transition hover:bg-white/[0.08]"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="mt-5 grid gap-4">
+          <label className="grid gap-2">
+            <span className="font-public text-[10px] uppercase tracking-[0.18em] text-stone-400">
+              Marker Title
+            </span>
+            <input
+              autoFocus
+              required
+              value={draft.title}
+              onChange={(event) => onChange("title", event.target.value)}
+              className="rounded-[18px] border border-white/8 bg-black/20 px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-lime-300/30"
+              placeholder="e.g. Enemy Sniper Nest"
+            />
+          </label>
+
+          <label className="grid gap-2">
+            <span className="font-public text-[10px] uppercase tracking-[0.18em] text-stone-400">
+              Category
+            </span>
+            <select
+              value={draft.categoryId}
+              onChange={(event) => onChange("categoryId", event.target.value)}
+              className="rounded-[18px] border border-white/8 bg-[#161b1d] px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-lime-300/30"
+            >
+              <option value="">Select a category...</option>
+              {categories
+                .filter(
+                  (cat) =>
+                    cat.id === "enemy-intel" ||
+                    !SUPPLEMENTAL_ENEMY_CATEGORY_IDS_FOR_MARKERS.includes(cat.id),
+                )
+                .map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+            </select>
+          </label>
+
+          {draft.categoryId === "enemy-intel" ? (
+            <label className="grid gap-2">
+              <span className="font-public text-[10px] uppercase tracking-[0.18em] text-stone-400">
+                Enemy Intel Type
+              </span>
+              <select
+                value={draft.categoryId === "enemy-intel" ? draft.enemyIntelType || "" : ""}
+                onChange={(event) => onChange("enemyIntelType", event.target.value)}
+                className="rounded-[18px] border border-white/8 bg-[#161b1d] px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-lime-300/30"
+              >
+                <option value="">Select enemy type...</option>
+                {SUPPLEMENTAL_ENEMY_CATEGORIES_FOR_MARKERS.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+
+          <label className="grid gap-2">
+            <span className="font-public text-[10px] uppercase tracking-[0.18em] text-stone-400">
+              Description / Notes
+            </span>
+            <textarea
+              rows={3}
+              value={draft.description}
+              onChange={(event) => onChange("description", event.target.value)}
+              className="resize-none rounded-[18px] border border-white/8 bg-black/20 px-4 py-3 text-sm leading-6 text-stone-100 outline-none transition focus:border-lime-300/30"
+              placeholder="Detail intel, jumlah unit musuh, atau catatan taktis..."
+            />
+          </label>
+
+          <div className="rounded-[18px] border border-white/6 bg-black/10 px-4 py-3">
+            <p className="font-public text-[9px] uppercase tracking-[0.18em] text-stone-500">
+              Coordinates
+            </p>
+            <p className="mt-1 font-mono text-xs text-stone-300">
+              X: {Math.round(draft.x)} | Y: {Math.round(draft.y)}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-between border-t border-white/6 pt-4">
+          <p className="font-public text-[9px] uppercase tracking-[0.18em] text-stone-500">
+            Marker will be visible to all operators.
+          </p>
+          <button
+            type="submit"
+            disabled={
+              !draft.title.trim() ||
+              !draft.categoryId ||
+              (draft.categoryId === "enemy-intel" && !draft.enemyIntelType)
+            }
+            className="rounded-full border border-lime-300/20 bg-lime-300 px-5 py-2.5 font-public text-[10px] font-bold uppercase tracking-[0.2em] text-[#0a100e] transition hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Add Marker
+          </button>
+        </div>
+      </motion.form>
+    </motion.div>
+  );
+}
+
 export default function StrategicDashboardPage() {
   // Function Group: synced resources, runtime refs, and UI state.
   const { user } = useAuth();
@@ -1271,6 +1445,7 @@ export default function StrategicDashboardPage() {
   );
   const [hasFittedMap, setHasFittedMap] = useState(Boolean(plannerResource.viewport));
   const [textDraft, setTextDraft] = useState(null);
+  const [markerDraft, setMarkerDraft] = useState(null);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [saveDraft, setSaveDraft] = useState({
     title: "",
@@ -1295,9 +1470,15 @@ export default function StrategicDashboardPage() {
     [],
   );
 
+  const allMarkers = useMemo(() => {
+    const staticMarkers = RONOGRAD_MAP_DATA.markers || [];
+    const dynamicMarkers = Array.isArray(plannerResource.customMarkers) ? plannerResource.customMarkers : [];
+    return [...staticMarkers, ...dynamicMarkers];
+  }, [plannerResource.customMarkers]);
+
   const normalizedMarkers = useMemo(
     () =>
-      RONOGRAD_MAP_DATA.markers.map((marker) => {
+      allMarkers.map((marker) => {
         const filterCategory = categoriesById.get(marker.categoryId);
         const category = marker.visualCategory ?? filterCategory;
         const supplementalIntel = getSupplementalMarkerIntel(marker);
@@ -1307,6 +1488,7 @@ export default function StrategicDashboardPage() {
           category,
           filterCategory,
           resolvedDescription:
+            marker.popup?.description?.trim() ||
             supplementalIntel.resolvedDescription ||
             "Tidak ada deskripsi intel yang terekam untuk node ini.",
           secretIntel: supplementalIntel.secretIntel,
@@ -1327,14 +1509,14 @@ export default function StrategicDashboardPage() {
             .toLowerCase(),
         };
       }),
-    [categoriesById],
+    [allMarkers, categoriesById],
   );
 
   const filteredMarkers = useMemo(() => {
     const normalizedSearchTerm = deferredSearchTerm.trim().toLowerCase();
 
     return normalizedMarkers.filter((marker) => {
-      if (!enabledCategoryIds.includes(marker.categoryId)) {
+      if (!isMarkerCategoryEnabled(marker.categoryId, enabledCategoryIds)) {
         return false;
       }
 
@@ -1396,7 +1578,8 @@ export default function StrategicDashboardPage() {
     const counts = new Map();
 
     normalizedMarkers.forEach((marker) => {
-      counts.set(marker.categoryId, (counts.get(marker.categoryId) ?? 0) + 1);
+      const categoryId = getEffectiveCategoryId(marker.categoryId);
+      counts.set(categoryId, (counts.get(categoryId) ?? 0) + 1);
     });
 
     return counts;
@@ -1406,7 +1589,8 @@ export default function StrategicDashboardPage() {
     const counts = new Map();
 
     filteredMarkers.forEach((marker) => {
-      counts.set(marker.categoryId, (counts.get(marker.categoryId) ?? 0) + 1);
+      const categoryId = getEffectiveCategoryId(marker.categoryId);
+      counts.set(categoryId, (counts.get(categoryId) ?? 0) + 1);
     });
 
     return counts;
@@ -1903,18 +2087,18 @@ export default function StrategicDashboardPage() {
   ]);
 
   useEffect(() => {
-    if (selectedMarker && !enabledCategoryIds.includes(selectedMarker.categoryId)) {
+    const isVisibleCategory = (marker) =>
+      marker && isMarkerCategoryEnabled(marker.categoryId, enabledCategoryIds);
+
+    if (selectedMarker && !isVisibleCategory(selectedMarker)) {
       setSelectedMarkerId(null);
     }
 
-    if (hoveredMarker && !enabledCategoryIds.includes(hoveredMarker.categoryId)) {
+    if (hoveredMarker && !isVisibleCategory(hoveredMarker)) {
       setHoveredMarkerId(null);
     }
 
-    if (
-      intelModalMarker &&
-      !enabledCategoryIds.includes(intelModalMarker.categoryId)
-    ) {
+    if (intelModalMarker && !isVisibleCategory(intelModalMarker)) {
       setIntelModalMarkerId(null);
     }
   }, [enabledCategoryIds, hoveredMarker, intelModalMarker, selectedMarker]);
@@ -1948,6 +2132,7 @@ export default function StrategicDashboardPage() {
       }
 
       return {
+        ...currentPlannerResource,
         actions: boardActions,
         enabledCategoryIds,
         viewport: currentPlannerResource?.viewport ?? null,
@@ -2196,6 +2381,35 @@ export default function StrategicDashboardPage() {
     setIsSaveModalOpen(true);
   };
 
+  const handleDeleteCustomMarker = (markerId) => {
+    const shouldDelete = window.confirm(
+      "Hapus marker ini? Tindakan ini tidak dapat dibatalkan.",
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setPlannerResource((currentPlannerResource) => {
+      const currentMarkers = currentPlannerResource?.customMarkers ?? [];
+      const nextMarkers = currentMarkers.filter((m) => m.id !== markerId);
+      return {
+        ...currentPlannerResource,
+        customMarkers: nextMarkers,
+      };
+    });
+
+    setSelectedMarkerId((currentSelected) =>
+      currentSelected === markerId ? null : currentSelected,
+    );
+    setHoveredMarkerId((currentHovered) =>
+      currentHovered === markerId ? null : currentHovered,
+    );
+    setIntelModalMarkerId((currentIntel) =>
+      currentIntel === markerId ? null : currentIntel,
+    );
+  };
+
   const openThreatIntel = (marker) => {
     if (!isThreatIntelMarker(marker)) {
       return;
@@ -2246,6 +2460,7 @@ export default function StrategicDashboardPage() {
           width: viewportSize.width,
           height: viewportSize.height,
         },
+        customMarkers: plannerResource.customMarkers || [],
       },
     };
 
@@ -2457,6 +2672,18 @@ export default function StrategicDashboardPage() {
       x: clamp(worldPoint.x, 0, MAP_WIDTH),
       y: clamp(worldPoint.y, 0, MAP_HEIGHT),
     };
+
+    if (activeTool === "marker") {
+      setMarkerDraft({
+        x: clampedPoint.x,
+        y: MAP_HEIGHT - clampedPoint.y,
+        title: "",
+        categoryId: "2",
+        description: "",
+        enemyIntelType: "",
+      });
+      return;
+    }
 
     if (activeTool === "text") {
       setTextDraft({
@@ -2793,28 +3020,91 @@ export default function StrategicDashboardPage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
-                  className="pointer-events-none absolute z-20 w-[260px] max-w-[70vw] border border-lime-300/18 bg-[#161b1d]/94 p-4 shadow-[0_22px_70px_rgba(0,0,0,0.4)] backdrop-blur-xl"
+                  onPointerDown={(event) => event.stopPropagation()}
+                  className="pointer-events-auto absolute z-20 w-[280px] max-w-[70vw] border border-white/10 bg-[#0f1517]/96 p-4 shadow-[0_22px_70px_rgba(0,0,0,0.4)] backdrop-blur-xl rounded-[24px]"
                   style={{
-                    left: `${clamp(selectedMarkerScreenPosition.x + 20, 16, Math.max(16, viewportSize.width - 276))}px`,
-                    top: `${clamp(selectedMarkerScreenPosition.y - 30, 16, Math.max(16, viewportSize.height - 140))}px`,
+                    left: `${clamp(selectedMarkerScreenPosition.x + 20, 16, Math.max(16, viewportSize.width - 296))}px`,
+                    top: `${clamp(selectedMarkerScreenPosition.y - 30, 16, Math.max(16, viewportSize.height - 150))}px`,
                   }}
                 >
-                  <p className="font-public text-[10px] uppercase tracking-[0.18em] text-lime-300">
-                    {selectedMarker.category?.name ?? "Intel Node"}
-                  </p>
-                  <p className="mt-2 font-sans text-lg font-bold uppercase text-stone-100">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-lime-300/12 text-lime-300">
+                        <MarkerCategoryGlyph
+                          category={selectedMarker.category}
+                          fallbackText={selectedMarker.category?.symbol ?? selectedMarker.category?.name?.slice(0, 1)}
+                          className="h-4 w-4"
+                        />
+                      </span>
+                      <p className="font-public text-[10px] uppercase tracking-[0.18em] text-lime-300">
+                        {selectedMarker.category?.name ?? "Intel Node"}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSelectedMarkerId(null);
+                        setIntelModalMarkerId(null);
+                      }}
+                      className="text-stone-500 hover:text-stone-300 transition"
+                    >
+                      <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="15" y1="5" x2="5" y2="15"></line>
+                        <line x1="5" y1="5" x2="15" y2="15"></line>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <p className="mt-3 font-sans text-lg font-bold uppercase tracking-[0.02em] text-stone-100">
                     {selectedMarker.popup.title}
                   </p>
-                  <p className="mt-3 text-xs leading-6 text-stone-400">
+                  <p className="mt-1 text-[10px] uppercase tracking-[0.22em] text-stone-500">
+                    {selectedMarker.category?.name ?? "Intel Node"}
+                  </p>
+                  <p className="mt-4 text-sm leading-6 text-stone-300">
                     {selectedMarker.resolvedDescription}
                   </p>
+                  <div className="mt-4 rounded-[16px] border border-white/8 bg-white/[0.04] px-3 py-2 text-[10px] text-stone-400">
+                    Coordinates: {formatInteger(selectedMarker.position[0])}, {formatInteger(selectedMarker.position[1])}
+                  </div>
+                  {selectedMarker.popup.link?.label || selectedMarker.popup.link?.url ? (
+                    <div className="mt-3 rounded-[16px] border border-white/8 bg-white/[0.04] px-3 py-2 text-[10px] text-stone-400">
+                      Link: {selectedMarker.popup.link?.label || selectedMarker.popup.link?.url}
+                    </div>
+                  ) : null}
+
+                  {selectedMarker.id.startsWith("custom-") ? (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleDeleteCustomMarker(selectedMarker.id);
+                      }}
+                      className="mt-4 flex items-center gap-1.5 w-full justify-center rounded-[14px] border border-rose-500/30 bg-rose-500/10 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-300 transition hover:bg-rose-500/20"
+                    >
+                      <PlannerIcon name="trash" className="h-3 w-3" />
+                      Delete Marker
+                    </button>
+                  ) : null}
                 </motion.div>
               ) : null}
             </AnimatePresence>
 
             {hoveredMarker && !selectedMarker ? (
-              <div className="pointer-events-none absolute left-4 top-4 border border-white/8 bg-[#161b1d]/90 px-4 py-3 text-sm text-stone-200 backdrop-blur-md">
-                {hoveredMarker.popup.title}
+              <div className="pointer-events-none absolute left-4 top-4 max-w-[320px] rounded-[18px] border border-white/8 bg-[#161b1d]/90 px-4 py-3 text-sm text-stone-200 backdrop-blur-md shadow-[0_16px_50px_rgba(0,0,0,0.36)]">
+                <p className="font-public text-[9px] uppercase tracking-[0.22em] text-lime-300">
+                  {hoveredMarker.category?.name ?? "Intel Node"}
+                </p>
+                <p className="mt-1 font-sans text-sm font-semibold text-stone-100">
+                  {hoveredMarker.popup.title}
+                </p>
+                <p className="mt-2 text-xs leading-5 text-stone-400">
+                  {hoveredMarker.resolvedDescription}
+                </p>
+                <p className="mt-2 text-[10px] text-stone-500">
+                  Coord: {formatInteger(hoveredMarker.position[0])}, {formatInteger(hoveredMarker.position[1])}
+                </p>
               </div>
             ) : null}
 
@@ -3236,29 +3526,35 @@ export default function StrategicDashboardPage() {
             </label>
 
             <div className="mt-5 max-h-[min(52vh,420px)] space-y-2 overflow-y-auto pr-1">
-              {RONOGRAD_MAP_DATA.categories.map((category) => {
-                const isEnabled = enabledCategoryIds.includes(category.id);
-                const totalCount = categoryCounts.get(category.id) ?? 0;
-                const visibleCount = visibleCategoryCounts.get(category.id) ?? 0;
+              {RONOGRAD_MAP_DATA.categories
+                .filter(
+                  (category) =>
+                    category.id === ENEMY_INTEL_ROOT_CATEGORY_ID ||
+                    !SUPPLEMENTAL_ENEMY_CATEGORY_IDS_FOR_MARKERS.includes(category.id),
+                )
+                .map((category) => {
+                  const isEnabled = enabledCategoryIds.includes(category.id);
+                  const totalCount = categoryCounts.get(category.id) ?? 0;
+                  const visibleCount = visibleCategoryCounts.get(category.id) ?? 0;
 
-                return (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() =>
-                      setEnabledCategoryIds((currentIds) =>
-                        currentIds.includes(category.id)
-                          ? currentIds.filter((id) => id !== category.id)
-                          : [...currentIds, category.id],
-                      )
-                    }
-                    className={[
-                      "flex w-full items-center justify-between rounded-[18px] border px-4 py-3 text-left backdrop-blur-xl transition",
-                      isEnabled
-                        ? "border-lime-300/18 bg-lime-300/[0.06]"
-                        : "border-white/6 bg-black/18 opacity-65 hover:opacity-100",
-                    ].join(" ")}
-                  >
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() =>
+                        setEnabledCategoryIds((currentIds) =>
+                          currentIds.includes(category.id)
+                            ? currentIds.filter((id) => id !== category.id)
+                            : [...currentIds, category.id],
+                        )
+                      }
+                      className={[
+                        "flex w-full items-center justify-between rounded-[18px] border px-4 py-3 text-left backdrop-blur-xl transition",
+                        isEnabled
+                          ? "border-lime-300/18 bg-lime-300/[0.06]"
+                          : "border-white/6 bg-black/18 opacity-65 hover:opacity-100",
+                      ].join(" ")}
+                    >
                     <div className="flex items-center gap-3">
                       <span
                         className="inline-flex"
@@ -3429,6 +3725,14 @@ export default function StrategicDashboardPage() {
                       onClick={() => openThreatIntel(selectedMarker)}
                     />
                   ) : null}
+                  {selectedMarker.id.startsWith("custom-") ? (
+                    <PlannerButton
+                      active={false}
+                      icon="trash"
+                      label="Delete Marker"
+                      onClick={() => handleDeleteCustomMarker(selectedMarker.id)}
+                    />
+                  ) : null}
                 </div>
               </div>
             ) : (
@@ -3445,28 +3749,40 @@ export default function StrategicDashboardPage() {
             </p>
             <div className="mt-4 grid gap-2 md:grid-cols-2">
               {pagedQuickIntelMarkers.map((marker) => (
-                <button
+                <div
                   key={marker.id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedMarkerId(marker.id);
-                    focusMarkerOnMap(marker);
-                    openThreatIntel(marker);
-                  }}
-                  className="rounded-[18px] border border-white/8 bg-[#151a1d]/90 px-4 py-3 text-left backdrop-blur-xl transition hover:border-lime-300/20 hover:bg-lime-300/[0.06]"
+                  className="rounded-[18px] border border-white/8 bg-[#151a1d]/90 px-4 py-3 backdrop-blur-xl transition hover:border-lime-300/20 hover:bg-lime-300/[0.06]"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIntelModalMarkerId(null);
+                        setSelectedMarkerId(marker.id);
+                        focusMarkerOnMap(marker);
+                      }}
+                      className="flex-1 text-left"
+                    >
                       <p className="font-sans text-base font-semibold uppercase text-stone-100">
                         {marker.popup.title}
                       </p>
                       <p className="mt-1 font-public text-[10px] uppercase tracking-[0.18em] text-stone-500">
                         {marker.category?.name ?? "Unknown"}
                       </p>
-                    </div>
-                    <span
-                      className="inline-flex"
-                    >
+                    </button>
+                    <span className="inline-flex items-center gap-2">
+                      {marker.id.startsWith("custom-") ? (
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleDeleteCustomMarker(marker.id);
+                          }}
+                          className="inline-flex h-9 items-center justify-center rounded-full border border-rose-400/25 bg-rose-500/10 px-3 text-[10px] uppercase tracking-[0.18em] text-rose-200 transition hover:bg-rose-500/20"
+                        >
+                          Delete
+                        </button>
+                      ) : null}
                       <MarkerBadge
                         category={marker.category}
                         sizeClass="h-8 w-8"
@@ -3475,7 +3791,7 @@ export default function StrategicDashboardPage() {
                       />
                     </span>
                   </div>
-                </button>
+                </div>
               ))}
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/8 pt-4">
@@ -3528,6 +3844,47 @@ export default function StrategicDashboardPage() {
             marker={intelModalMarker}
             intel={activeThreatIntel}
             onClose={() => setIntelModalMarkerId(null)}
+          />
+        ) : null}
+        {markerDraft ? (
+          <AddMarkerModal
+            draft={markerDraft}
+            categories={RONOGRAD_MAP_DATA.categories}
+            onChange={(key, value) =>
+              setMarkerDraft((currentDraft) =>
+                currentDraft ? { ...currentDraft, [key]: value } : currentDraft,
+              )
+            }
+            onClose={() => setMarkerDraft(null)}
+            onSubmit={(event) => {
+              event.preventDefault();
+              
+              // Use enemyIntelType if "enemy-intel" is selected
+              const finalCategoryId = markerDraft.categoryId === "enemy-intel" 
+                ? (markerDraft.enemyIntelType || "enemy-intel")
+                : markerDraft.categoryId;
+              
+              const newMarker = {
+                id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                categoryId: finalCategoryId,
+                position: [markerDraft.x, markerDraft.y],
+                popup: {
+                  title: markerDraft.title.trim() || "Custom Marker",
+                  description: markerDraft.description.trim(),
+                  link: { url: "", label: "" },
+                },
+              };
+
+              setPlannerResource((currentPlannerResource) => {
+                const currentMarkers = currentPlannerResource?.customMarkers ?? [];
+                return {
+                  ...currentPlannerResource,
+                  customMarkers: [...currentMarkers, newMarker],
+                };
+              });
+
+              setMarkerDraft(null);
+            }}
           />
         ) : null}
       </AnimatePresence>

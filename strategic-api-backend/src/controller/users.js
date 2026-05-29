@@ -26,6 +26,7 @@ const createUserSchema = Joi.object({
     customMaps: Joi.boolean(),
     saves: Joi.boolean(),
   }).optional(),
+  subscriptionExpiresAt: Joi.string().isoDate().allow(null).optional(),
 })
   .or("operatorId", "username")
   .or("securityKey", "password");
@@ -115,6 +116,7 @@ exports.createUser = async (req, res) => {
     scope: "strategic",
     password: await hashPassword(securityKey),
     access: normalizeStrategicAccess(value.access),
+    subscriptionExpiresAt: value.subscriptionExpiresAt || null,
     active: true,
     isPrimaryAdmin: false,
   });

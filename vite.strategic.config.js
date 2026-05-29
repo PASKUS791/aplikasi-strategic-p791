@@ -17,17 +17,20 @@ const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 const publicBasePath = process.env.VITE_PUBLIC_BASE_PATH || "/";
 
 export default defineConfig({
-  root: resolve(projectRoot, "strategic-site"),
+  root: projectRoot,
   base: publicBasePath,
   publicDir: resolve(projectRoot, "public"),
   plugins: [react(), tailwindcss()],
   server: {
     port: 5174,
+    fs: {
+      allow: [projectRoot],
+    },
     proxy: {
       "/api": {
-        target: "https://api.strategic.so791.com",
+        target: "http://localhost:4455",
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
     },
   },

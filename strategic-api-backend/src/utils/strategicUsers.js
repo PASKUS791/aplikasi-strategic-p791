@@ -19,6 +19,14 @@ function serializeStrategicUser(userDoc) {
     return null;
   }
 
+  const subscriptionStatus = userDoc.isPrimaryAdmin
+    ? "active"
+    : userDoc.subscriptionExpiresAt
+    ? new Date(userDoc.subscriptionExpiresAt) > new Date()
+      ? "active"
+      : "expired"
+    : "none";
+
   return {
     id: String(userDoc._id),
     username: normalizeStrategicUsername(userDoc.username),
@@ -28,6 +36,10 @@ function serializeStrategicUser(userDoc) {
     unit: String(userDoc.unit || "Strategic Command"),
     scope: "strategic",
     access: normalizeStrategicAccess(userDoc.access),
+    subscriptionExpiresAt: userDoc.subscriptionExpiresAt
+      ? new Date(userDoc.subscriptionExpiresAt).toISOString()
+      : null,
+    subscriptionStatus,
     isPrimaryAdmin: userDoc.isPrimaryAdmin === true,
     active: userDoc.active !== false,
   };
@@ -38,6 +50,16 @@ function buildMapPlannerUsersSnapshot(userDocs) {
     ? userDocs.map((entry) => ({
         username: normalizeStrategicUsername(entry.username),
         access: normalizeStrategicAccess(entry.access),
+        subscriptionExpiresAt: entry.subscriptionExpiresAt
+          ? new Date(entry.subscriptionExpiresAt).toISOString()
+          : null,
+        subscriptionStatus: entry.isPrimaryAdmin
+          ? "active"
+          : entry.subscriptionExpiresAt
+          ? new Date(entry.subscriptionExpiresAt) > new Date()
+            ? "active"
+            : "expired"
+          : "none",
         updatedAt: new Date(entry.updatedAt || entry.createdAt || Date.now()).toISOString(),
       }))
     : [];
