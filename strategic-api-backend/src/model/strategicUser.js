@@ -50,6 +50,12 @@ const strategicUserSchema = new mongoose.Schema(
       default: "strategic",
       enum: ["strategic"],
     },
+    role: {
+      type: String,
+      enum: ["admin", "scout", "user"],
+      default: "user",
+      required: true,
+    },
     password: {
       type: String,
       required: true,

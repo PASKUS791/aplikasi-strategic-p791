@@ -19,6 +19,7 @@ const createUserSchema = Joi.object({
   username: Joi.string().trim().lowercase().min(3).max(60),
   label: Joi.string().trim().min(2).max(100).required(),
   unit: Joi.string().trim().min(2).max(120).required(),
+  role: Joi.string().valid("admin", "scout", "user").default("user"),
   securityKey: Joi.string().min(8).max(128),
   password: Joi.string().min(8).max(128),
   access: Joi.object({
@@ -114,6 +115,7 @@ exports.createUser = async (req, res) => {
     nama: value.label,
     unit: value.unit,
     scope: "strategic",
+    role: value.role || "user",
     password: await hashPassword(securityKey),
     access: normalizeStrategicAccess(value.access),
     subscriptionExpiresAt: value.subscriptionExpiresAt || null,

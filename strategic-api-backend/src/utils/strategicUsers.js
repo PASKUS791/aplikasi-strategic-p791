@@ -6,6 +6,20 @@ function normalizeStrategicUsername(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+function normalizeStrategicRole(role = "user") {
+  const normalized = String(role || "").trim().toLowerCase();
+
+  if (normalized === "admin") {
+    return "admin";
+  }
+
+  if (normalized === "scout") {
+    return "scout";
+  }
+
+  return "user";
+}
+
 function normalizeStrategicAccess(access = {}) {
   return {
     mainPlanner: access?.mainPlanner !== false,
@@ -35,6 +49,7 @@ function serializeStrategicUser(userDoc) {
     nama: String(userDoc.nama || userDoc.label || userDoc.username || "Strategic User"),
     unit: String(userDoc.unit || "Strategic Command"),
     scope: "strategic",
+    role: userDoc.isPrimaryAdmin ? "admin" : normalizeStrategicRole(userDoc.role),
     access: normalizeStrategicAccess(userDoc.access),
     subscriptionExpiresAt: userDoc.subscriptionExpiresAt
       ? new Date(userDoc.subscriptionExpiresAt).toISOString()
@@ -49,6 +64,7 @@ function buildMapPlannerUsersSnapshot(userDocs) {
   return Array.isArray(userDocs)
     ? userDocs.map((entry) => ({
         username: normalizeStrategicUsername(entry.username),
+        role: entry.isPrimaryAdmin ? "admin" : normalizeStrategicRole(entry.role),
         access: normalizeStrategicAccess(entry.access),
         subscriptionExpiresAt: entry.subscriptionExpiresAt
           ? new Date(entry.subscriptionExpiresAt).toISOString()
@@ -68,6 +84,7 @@ function buildMapPlannerUsersSnapshot(userDocs) {
 module.exports = {
   buildMapPlannerUsersSnapshot,
   normalizeStrategicAccess,
+  normalizeStrategicRole,
   normalizeStrategicUsername,
   serializeStrategicUser,
 };

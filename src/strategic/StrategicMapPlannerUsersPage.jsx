@@ -31,6 +31,7 @@ const INITIAL_FORM_STATE = {
   username: "",
   label: "",
   unit: "Strategic Command",
+  role: "user",
   password: "",
 };
 
@@ -357,6 +358,21 @@ export default function StrategicMapPlannerUsersPage() {
 
             <label className="grid gap-2">
               <span className="font-public text-[10px] uppercase tracking-[0.18em] text-stone-400">
+                Role
+              </span>
+              <select
+                value={formState.role}
+                onChange={handleChange("role")}
+                className="rounded-[18px] border border-white/8 bg-black/20 px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-lime-300/24"
+              >
+                <option value="user">User</option>
+                <option value="scout">Scout</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
+
+            <label className="grid gap-2">
+              <span className="font-public text-[10px] uppercase tracking-[0.18em] text-stone-400">
                 Security Key
               </span>
               <input
@@ -424,7 +440,15 @@ export default function StrategicMapPlannerUsersPage() {
                         <span className="rounded-full border border-lime-300/18 bg-lime-300/10 px-3 py-1 font-public text-[9px] uppercase tracking-[0.18em] text-lime-200">
                           Strategic Utama
                         </span>
-                      ) : null}
+                      ) : (
+                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-public text-[9px] uppercase tracking-[0.18em] text-stone-300">
+                          {entry.role === "scout"
+                            ? "Scout"
+                            : entry.role === "admin"
+                              ? "Admin"
+                              : "User"}
+                        </span>
+                      )}
                     </div>
                     <p className="mt-1 text-sm text-stone-400">
                       Operator ID: @{entry.operatorId || entry.username}

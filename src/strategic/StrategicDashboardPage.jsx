@@ -20,7 +20,7 @@ import {
 import RotatingPaskusLogo from "../components/RotatingPaskusLogo";
 import { useAuth } from "../lib/strategicAuth";
 import { RESOURCE_KEYS, useSyncedResource } from "../lib/resources";
-import { getStrategicAccessForUser } from "./strategicAccess";
+import { canStrategicUserAddMarkers, getStrategicAccessForUser } from "./strategicAccess";
 import { MarkerCategoryGlyph } from "./markerIcons";
 import { getSupplementalMarkerIntel } from "./markerSupplementalIntel";
 import {
@@ -614,6 +614,7 @@ function FullscreenMapToolbar({
   onReveal,
   onScheduleHide,
   onHoverChange,
+  canAddMarkers,
 }) {
   return (
     <div className="pointer-events-none absolute inset-y-4 right-0 z-[65] flex items-center overflow-visible">
@@ -636,7 +637,7 @@ function FullscreenMapToolbar({
         className="pointer-events-auto mr-2 w-[80px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-[22px] border border-white/10 bg-[#0f1518]/78 p-2.5 shadow-[0_24px_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl sm:mr-3 sm:w-[84px] sm:rounded-[26px] sm:p-3"
       >
         <div className="space-y-2">
-          {DRAW_TOOL_OPTIONS.map((tool) => (
+          {DRAW_TOOL_OPTIONS.filter((tool) => tool.id !== "marker" || canAddMarkers).map((tool) => (
             <ToolbarIconButton
               key={`fullscreen-${tool.id}`}
               active={activeTool === tool.id}
@@ -650,13 +651,12 @@ function FullscreenMapToolbar({
                       : tool.id
               }
               label={tool.label}
-              onClick={() => onSetTool(tool.id)}
-              sizeClass="h-10 w-10"
-              className="mx-auto rounded-[14px]"
+              onClick={() => {
+                onSetTool(tool.id);
+              }}
             />
           ))}
         </div>
-
         <FullscreenMapToolbarSections
           selectedColor={selectedColor}
           brushSize={brushSize}
@@ -678,34 +678,34 @@ function FullscreenMapToolbar({
       </motion.div>
 
       <motion.button
-        type="button"
-        data-map-toolbar="true"
-        title="Show tools"
-        aria-label="Show tools"
-        initial={false}
-        animate={{
-          opacity: isVisible ? 0.64 : 1,
-          x: isVisible ? 0 : -6,
-        }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        onPointerEnter={() => {
-          onHoverChange(true);
-          onReveal();
-        }}
-        onPointerLeave={() => {
-          onHoverChange(false);
-          onScheduleHide();
-        }}
-        onPointerDown={(event) => event.stopPropagation()}
-        onClick={(event) => {
-          event.stopPropagation();
-          onReveal();
-          onScheduleHide(2400);
-        }}
-        whileHover={{ x: -8 }}
-        whileTap={{ scale: 0.96 }}
-        className="pointer-events-auto group absolute right-0 top-1/2 flex -translate-y-1/2 items-center gap-2 rounded-l-[18px] border border-r-0 border-lime-300/18 bg-[#11181c]/86 px-3 py-3 text-stone-200 shadow-[0_14px_40px_rgba(0,0,0,0.34)] backdrop-blur-xl"
-      >
+          type="button"
+          data-map-toolbar="true"
+          title="Show tools"
+          aria-label="Show tools"
+          initial={false}
+          animate={{
+            opacity: isVisible ? 0.64 : 1,
+            x: isVisible ? 0 : -6,
+          }}
+          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          onPointerEnter={() => {
+            onHoverChange(true);
+            onReveal();
+          }}
+          onPointerLeave={() => {
+            onHoverChange(false);
+            onScheduleHide();
+          }}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            onReveal();
+            onScheduleHide(2400);
+          }}
+          whileHover={{ x: -8 }}
+          whileTap={{ scale: 0.96 }}
+          className="pointer-events-auto group absolute right-0 top-1/2 flex -translate-y-1/2 items-center gap-2 rounded-l-[18px] border border-r-0 border-lime-300/18 bg-[#11181c]/86 px-3 py-3 text-stone-200 shadow-[0_14px_40px_rgba(0,0,0,0.34)] backdrop-blur-xl"
+        >
         <span className="pointer-events-none absolute inset-x-2 top-1 h-px bg-[linear-gradient(90deg,rgba(103,232,249,0),rgba(103,232,249,0.85),rgba(244,63,94,0.55),rgba(103,232,249,0))] opacity-0 blur-[1px] transition duration-200 group-hover:opacity-100" />
         <PlannerIcon name="layers" className="h-4 w-4 text-lime-300" />
         <span className="font-public text-[9px] uppercase tracking-[0.22em] text-stone-300">
@@ -1403,6 +1403,7 @@ export default function StrategicDashboardPage() {
     normalize: loadStoredPlannerState,
   });
   const strategicAccess = useMemo(() => getStrategicAccessForUser(user), [user]);
+  const canAddMarkers = useMemo(() => canStrategicUserAddMarkers(user), [user]);
   const {
     data: strategicSaves,
     setData: setStrategicSaves,
@@ -1434,6 +1435,11 @@ export default function StrategicDashboardPage() {
   const [redoStack, setRedoStack] = useState([]);
   const [activeTool, setActiveTool] = useState("pan");
   const [selectedColor, setSelectedColor] = useState(COLOR_SWATCHES[0]);
+  useEffect(() => {
+    if (activeTool === "marker" && !canAddMarkers) {
+      setActiveTool("pan");
+    }
+  }, [activeTool, canAddMarkers]);
   const [brushSize, setBrushSize] = useState(14);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [viewport, setViewport] = useState(
@@ -2382,6 +2388,10 @@ export default function StrategicDashboardPage() {
   };
 
   const handleDeleteCustomMarker = (markerId) => {
+    if (!canAddMarkers) {
+      return;
+    }
+
     const shouldDelete = window.confirm(
       "Hapus marker ini? Tindakan ini tidak dapat dibatalkan.",
     );
@@ -2674,6 +2684,11 @@ export default function StrategicDashboardPage() {
     };
 
     if (activeTool === "marker") {
+      if (!canAddMarkers) {
+        setActiveTool("pan");
+        return;
+      }
+
       setMarkerDraft({
         x: clampedPoint.x,
         y: MAP_HEIGHT - clampedPoint.y,
@@ -3074,7 +3089,7 @@ export default function StrategicDashboardPage() {
                     </div>
                   ) : null}
 
-                  {selectedMarker.id.startsWith("custom-") ? (
+                  {canAddMarkers && selectedMarker.id.startsWith("custom-") ? (
                     <button
                       type="button"
                       onClick={(event) => {
@@ -3322,6 +3337,7 @@ export default function StrategicDashboardPage() {
               onReveal={revealFullscreenToolbar}
               onScheduleHide={scheduleFullscreenToolbarHide}
               onHoverChange={setIsFullscreenToolbarHovered}
+              canAddMarkers={canAddMarkers}
             />
           ) : null}
         </div>
@@ -3329,7 +3345,7 @@ export default function StrategicDashboardPage() {
         <div className="mt-4 rounded-[24px] border border-white/8 bg-white/[0.035] px-4 py-4 shadow-[0_18px_60px_rgba(0,0,0,0.2)] backdrop-blur-xl transition hover:border-lime-300/16">
           <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
             <div className="flex flex-wrap items-center gap-2">
-              {DRAW_TOOL_OPTIONS.map((tool) => (
+              {DRAW_TOOL_OPTIONS.filter((tool) => tool.id !== "marker" || canAddMarkers).map((tool) => (
                 <ToolbarIconButton
                   key={tool.id}
                   active={activeTool === tool.id}
@@ -3343,7 +3359,9 @@ export default function StrategicDashboardPage() {
                           : tool.id
                   }
                   label={tool.label}
-                  onClick={() => setActiveTool(tool.id)}
+                  onClick={() => {
+                    setActiveTool(tool.id);
+                  }}
                 />
               ))}
             </div>
@@ -3725,7 +3743,7 @@ export default function StrategicDashboardPage() {
                       onClick={() => openThreatIntel(selectedMarker)}
                     />
                   ) : null}
-                  {selectedMarker.id.startsWith("custom-") ? (
+                  {canAddMarkers && selectedMarker.id.startsWith("custom-") ? (
                     <PlannerButton
                       active={false}
                       icon="trash"
@@ -3771,7 +3789,7 @@ export default function StrategicDashboardPage() {
                       </p>
                     </button>
                     <span className="inline-flex items-center gap-2">
-                      {marker.id.startsWith("custom-") ? (
+                      {canAddMarkers && marker.id.startsWith("custom-") ? (
                         <button
                           type="button"
                           onClick={(event) => {

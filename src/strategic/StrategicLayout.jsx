@@ -49,6 +49,7 @@ const NAV_ITEMS = [
     to: "/dashboard/server-addresses",
     end: false,
     icon: "webhook",
+    adminOnly: true,
   },
   {
     label: "Tambah User Map Planner",
@@ -207,12 +208,14 @@ export default function StrategicLayout() {
     const isPlannerRoute = location.pathname === "/dashboard";
     const isCustomMapRoute = location.pathname.startsWith("/dashboard/custom-maps");
     const isSaveRoute = location.pathname.startsWith("/dashboard/saves");
+    const isServerAddressRoute = location.pathname.startsWith("/dashboard/server-addresses");
     const isUsersRoute = location.pathname.startsWith("/dashboard/users");
 
     return (
       (isPlannerRoute && !accessState.mainPlanner) ||
       (isCustomMapRoute && !accessState.customMaps) ||
       (isSaveRoute && !accessState.saves) ||
+      (isServerAddressRoute && !isPrimaryAdmin) ||
       (isUsersRoute && !isPrimaryAdmin)
     );
   }, [accessState, isPrimaryAdmin, location.pathname]);

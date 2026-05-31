@@ -10,6 +10,7 @@ const { hashPassword } = require("./password");
 const {
   buildMapPlannerUsersSnapshot,
   normalizeStrategicAccess,
+  normalizeStrategicRole,
   normalizeStrategicUsername,
 } = require("./strategicUsers");
 const { DEFAULT_RESOURCE_VALUES, cloneValue } = require("./resources");
@@ -95,6 +96,7 @@ async function ensurePrimaryAdmin(seedPayload) {
         label,
         nama: label,
         unit,
+        role: "admin",
         password: await hashPassword(password),
         access: {
           mainPlanner: true,
@@ -134,6 +136,7 @@ async function ensureSeedUsers(seedPayload) {
       nama: String(entry.nama || entry.label || username),
       unit: String(entry.unit || "Strategic Command"),
       scope: "strategic",
+      role: entry.isPrimaryAdmin ? "admin" : normalizeStrategicRole(entry.role),
       password: await hashPassword(entry.securityKey || entry.password || "ChangeMeStrategic123!"),
       access: normalizeStrategicAccess(entry.access),
       isPrimaryAdmin: entry.isPrimaryAdmin === true,

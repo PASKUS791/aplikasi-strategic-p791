@@ -100,6 +100,7 @@ export function normalizeStrategicSessionUser(user) {
     label: String(user.label || user.nama || operatorId || "Strategic Admin"),
     unit: String(user.unit || "Strategic Command"),
     scope: "strategic",
+    role: String(user.role || (user?.isPrimaryAdmin ? "admin" : "user")),
     access: normalizedAccess,
     isPrimaryAdmin: user?.isPrimaryAdmin === true,
   };
